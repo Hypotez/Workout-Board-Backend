@@ -1,0 +1,22 @@
+{
+  "name": "workout-board-backend",
+  "version": "1.0.0",
+  "description": "1. Rename .env.template to .env and change the variables.",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "app": "tsc && node ./dist/main.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.2.1",
+    "typescript": "^5.9.2"
+  }
+}
