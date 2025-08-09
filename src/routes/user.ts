@@ -4,8 +4,7 @@ import logger from '../logger/logger'
 const router = Router()
 
 router.post('/', async (req, res): Promise<void> => {
-    logger.info('Login request received')
-    res.status(200).send('Ok')
+    res.success({ message: 'User route is working' })
 })
 
 export default router

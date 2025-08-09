@@ -1,17 +1,26 @@
 import express from 'express'
-import dotenv from 'dotenv'
+import cors from "cors"
 
+import env from './config/env.js'
+import { apiResponseMiddleware } from './middleware/middleware.js'
 import logger from './logger/logger.js'
-import { Service } from './types.js'
 
-dotenv.config()
+import user from './routes/user.js'
 
-const PORT = process.env.PORT
-const NODE_ENV = process.env.NODE_ENV
+import { ErrorStatusCode, SuccessStatusCode, Service } from './types.js'
+
+const PORT = env.PORT
+const NODE_ENV = env.NODE_ENV
+const FRONTEND_URL = env.FRONTEND_URL
 
 declare module 'express-serve-static-core' {
   export interface Request {
     service: Service
+  }
+
+  export interface Response {
+    success: (data?: any, statusCode?: SuccessStatusCode) => void
+    error: (error?: string | null, statusCode?: ErrorStatusCode) => void
   }
 }
 
@@ -19,6 +28,11 @@ const app = express()
 
 app.use(express.urlencoded({ extended: true, limit: '1mb' }))
 app.use(express.json({ limit: '1mb' }))
+app.use(cors({
+  origin: FRONTEND_URL,
+  credentials: true
+}));
+app.use(apiResponseMiddleware)
 
 app.use((req, _, next) => {
   req.service = {
@@ -27,9 +41,9 @@ app.use((req, _, next) => {
   next()
 })
 
+app.use('/api/v1/user', user)
 
-if (PORT && NODE_ENV) {
-  app.listen(PORT, () => {
-    logger.info(`Server is running on http://localhost:${PORT} NODE_ENV=${NODE_ENV}`)
-  })
-}
+
+app.listen(PORT, () => {
+  logger.info(`Server is running on http://localhost:${PORT} NODE_ENV=${NODE_ENV}`)
+})
