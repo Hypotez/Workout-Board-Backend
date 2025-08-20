@@ -1,14 +1,17 @@
 import dotenv from 'dotenv'
 import { z } from "zod";
+import { urlSchema, uuidSchema, nonEmptyStringSchema } from "../types";
 
 import logger from '../logger/logger.js'
 
 dotenv.config()
 
 const EnvSchema = z.object({
-    PORT: z.string().min(1, 'PORT must be a non-empty string'),
+    PORT: nonEmptyStringSchema,
     NODE_ENV: z.enum(['development', 'production'], 'NODE_ENV must be either "development" or "production"'),
-    FRONTEND_URL: z.string().url('FRONTEND_URL must be a valid URL')
+    FRONTEND_URL: urlSchema,
+    HEVY_URL: urlSchema,
+    HEVY_API_KEY: uuidSchema
 })
 
 const result = EnvSchema.safeParse(process.env)

@@ -7,21 +7,24 @@ import logger from './logger/logger.js'
 
 import user from './routes/user.js'
 
-import { ErrorStatusCode, SuccessStatusCode, Service } from './types.js'
+import HevyClient from './service/hevyClient.js'
+
+
+import { Service, ResponseHelpers } from './types.js'
 
 const PORT = env.PORT
 const NODE_ENV = env.NODE_ENV
 const FRONTEND_URL = env.FRONTEND_URL
+
+const HEVY_URL = env.HEVY_URL
+const HEVY_API_KEY = env.HEVY_API_KEY
 
 declare module 'express-serve-static-core' {
   export interface Request {
     service: Service
   }
 
-  export interface Response {
-    success: (data?: any, statusCode?: SuccessStatusCode) => void
-    error: (error?: string | null, statusCode?: ErrorStatusCode) => void
-  }
+  export interface Response extends ResponseHelpers{}
 }
 
 const app = express()
@@ -36,6 +39,7 @@ app.use(apiResponseMiddleware)
 
 app.use((req, _, next) => {
   req.service = {
+    hevyClient: new HevyClient(HEVY_URL, HEVY_API_KEY)
   }
 
   next()
