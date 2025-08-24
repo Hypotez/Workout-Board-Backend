@@ -1,4 +1,4 @@
-import { HevyClientService, Uuid, Url } from "../types";
+import { HevyClientService, Uuid, Url, SuccessResponse, SuccessString, ApiResponse, WorkoutResponseSchema, WorkoutResponse } from "../types";
 import logger from '../logger/logger'
 
 
@@ -11,7 +11,7 @@ export default class HevyClient implements HevyClientService {
     this.apiKey = apiKey;
   }
 
-  private async fetchWithAuth(endpoint: string, options?: RequestInit): Promise<void> {
+  private async fetchWithAuth(endpoint: string, options?: RequestInit): Promise<ApiResponse> {
     const fullPath = this.baseUrl + endpoint;
     const headers = {
       ...options?.headers,
@@ -21,14 +21,43 @@ export default class HevyClient implements HevyClientService {
 
     const response = await fetch(fullPath, { ...options, headers });
 
-    
+    let finalResponse: unknown = null;
+    try {
+      finalResponse = await response.json()
+    } catch (error) {
+      logger.error('[HevyClient][FetchWithAuth][Content-Type]', error)
+    }
 
-    return 
+    if (response.ok) {
+      const returnResponse: SuccessResponse = {
+        status: SuccessString,
+        data: null
+      }
+
+      if (finalResponse) {
+        returnResponse.data = finalResponse
+      }
+
+      return returnResponse
+    }
+
+    logger.error(`[HevyClient][FetchWithAuth][Response] Status: ${response.status} , Text: ${response.statusText} `)
+
+    return null
   }
 
-  async getWorkouts(page: number, pageSize: number): Promise<void> {
-    //const result = await this.fetchWithAuth(`/v1/workouts?page=${page}&pageSize=${pageSize}`, { method: "GET"});
-    return;
+  async getWorkouts(page: number, pageSize: number): Promise<WorkoutResponse | null> {
+    const response = await this.fetchWithAuth(`/v1/workouts?page=${page}&pageSize=${pageSize}`, { method: "GET"});
+    
+    if (response) {
+      const workoutResponse = WorkoutResponseSchema.safeParse(response.data)
+
+      if (workoutResponse.success) {
+        return workoutResponse.data
+      }
+    }
+
+    return null
   }
 
 }
