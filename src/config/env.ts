@@ -2,7 +2,7 @@ import dotenv from 'dotenv'
 import { z } from "zod";
 import { urlSchema, uuidSchema, nonEmptyStringSchema } from "../types";
 
-import logger from '../logger/logger.js'
+import logger from '../logger/logger'
 
 dotenv.config()
 

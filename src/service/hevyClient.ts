@@ -1,4 +1,5 @@
 import { HevyClientService, Uuid, Url } from "../types";
+import logger from '../logger/logger'
 
 
 export default class HevyClient implements HevyClientService {

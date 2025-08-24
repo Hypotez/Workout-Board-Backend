@@ -1,16 +1,16 @@
 import express from 'express'
 import cors from "cors"
 
-import env from './config/env.js'
-import { apiResponseMiddleware } from './middleware/middleware.js'
-import logger from './logger/logger.js'
+import env from './config/env'
+import { apiResponseMiddleware } from './middleware/middleware'
+import logger from './logger/logger'
 
-import user from './routes/user.js'
+import user from './routes/user'
 
-import HevyClient from './service/hevyClient.js'
+import HevyClient from './service/hevyClient'
 
 
-import { Service, ResponseHelpers } from './types.js'
+import { Service, ResponseHelpers } from './types'
 
 const PORT = env.PORT
 const NODE_ENV = env.NODE_ENV

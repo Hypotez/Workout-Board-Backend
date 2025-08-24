@@ -4,6 +4,7 @@
   "description": "1. Rename .env.template to .env and change the variables.",
   "main": "index.js",
   "scripts": {
+    "dev": "npx ts-node-dev --respawn src/main.ts",
     "build": "tsc",
     "app": "tsc && node ./dist/main.js"
   },
@@ -20,6 +21,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/node": "^24.2.1",
+    "nodemon": "^3.1.10",
     "typescript": "^5.9.2"
   }
 }
