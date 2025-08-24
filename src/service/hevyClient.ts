@@ -1,4 +1,4 @@
-import { HevyClientService, Uuid, Url, SuccessResponse, SuccessString, ApiResponse, WorkoutResponseSchema, WorkoutResponse } from "../types";
+import { HevyClientService, Uuid, Url, SuccessResponse, SuccessString, ApiResponse, WorkoutResponseSchema, WorkoutResponse, AllWorkoutResponse } from "../types";
 import logger from '../logger/logger'
 
 
@@ -58,6 +58,23 @@ export default class HevyClient implements HevyClientService {
     }
 
     return null
+  }
+
+  async getAllWorkouts(pageSize: number): Promise<AllWorkoutResponse | null> {
+    const result: AllWorkoutResponse = []
+    let page = 1;
+    let pageCount = 1;
+
+    do {
+      const response = await this.getWorkouts(page, pageSize);
+      if (!response) break;
+
+      result.push(...response.workouts);
+      pageCount = response.page_count;
+      page++;
+    } while (page <= pageCount);
+
+    return result.length > 0 ? result : null;
   }
 
 }

@@ -70,6 +70,13 @@ export interface HevyClientService {
      * @returns Hevy response
     */
     getWorkouts(page: number, pageSize: number): Promise<WorkoutResponse | null>;
+    /**
+     * Get a list of all workouts.
+     * @param pageSize Number of items on the requested page (Max 10)
+     * @returns Hevy response
+    */
+    getAllWorkouts(pageSize: number): Promise<AllWorkoutResponse | null>;
+
 }
 
 //Hevy API Schemas
@@ -118,3 +125,4 @@ export const WorkoutResponseSchema = z.object({
 })
 
 export type WorkoutResponse = z.infer<typeof WorkoutResponseSchema>;
+export type AllWorkoutResponse = z.infer<typeof WorkoutsSchema>;
