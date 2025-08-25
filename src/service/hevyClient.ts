@@ -1,4 +1,4 @@
-import { HevyClientService, Uuid, Url, SuccessResponse, SuccessString, ApiResponse, WorkoutResponseSchema, WorkoutResponse, AllWorkoutResponse } from "../types";
+import { HevyClientService, Uuid, Url, SuccessResponse, SuccessString, ApiResponse, WorkoutResponseSchema, WorkoutResponse, AllWorkoutResponse, WorkoutCountsSchema, WorkoutCountsResponse } from "../types";
 import logger from '../logger/logger'
 
 
@@ -47,8 +47,8 @@ export default class HevyClient implements HevyClientService {
   }
 
   async getWorkouts(page: number, pageSize: number): Promise<WorkoutResponse | null> {
-    const response = await this.fetchWithAuth(`/v1/workouts?page=${page}&pageSize=${pageSize}`, { method: "GET"});
-    
+    const response = await this.fetchWithAuth(`/v1/workouts?page=${page}&pageSize=${pageSize}`, { method: "GET" });
+
     if (response) {
       const workoutResponse = WorkoutResponseSchema.safeParse(response.data)
 
@@ -75,6 +75,20 @@ export default class HevyClient implements HevyClientService {
     } while (page <= pageCount);
 
     return result.length > 0 ? result : null;
+  }
+
+  async getWorkoutsCount(): Promise<WorkoutCountsResponse | null> {
+    const response = await this.fetchWithAuth(`/v1/workouts/count`, { method: "GET" });
+
+    if (response) {
+      const workoutCountsResponse = WorkoutCountsSchema.safeParse(response.data);
+
+      if (workoutCountsResponse.success) {
+        return workoutCountsResponse.data;
+      }
+    }
+
+    return null;
   }
 
 }

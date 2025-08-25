@@ -9,6 +9,7 @@ const ErrorSchema = z.string().nullable();
 const DataSchema = z.unknown();
 const SuccessStatusSchema = z.literal(SuccessString)
 const ErrorStatusSchema = z.literal(ErrorString)
+const dateSchema = z.string().datetime({ offset: true }).brand<"ISO8601">();
 
 export const urlSchema = z.url("Not a valid URL").brand<"Url">();
 export const uuidSchema = z.uuid("Not a valid UUID").brand<"Uuid">();
@@ -76,6 +77,11 @@ export interface HevyClientService {
      * @returns Hevy response
     */
     getAllWorkouts(pageSize: number): Promise<AllWorkoutResponse | null>;
+    /**
+     * Get the total number of workouts on the account.
+     * @returns Hevy response
+    */
+    getWorkoutsCount(): Promise<WorkoutCountsResponse | null>;
 
 }
 
@@ -109,10 +115,10 @@ const WorkoutSchema = z.object({
   id: z.uuid(),
   title: z.string(),
   description: z.string(),
-  start_time: z.string(),
-  end_time: z.string(),
-  updated_at: z.string(),
-  created_at: z.string(),
+  start_time: dateSchema,
+  end_time: dateSchema,
+  updated_at: dateSchema,
+  created_at: dateSchema,
   exercises: ExercisesSchema
 })
 
@@ -124,5 +130,10 @@ export const WorkoutResponseSchema = z.object({
   workouts: WorkoutsSchema
 })
 
+export const WorkoutCountsSchema = z.object({
+  workout_count: z.number()
+});
+
 export type WorkoutResponse = z.infer<typeof WorkoutResponseSchema>;
 export type AllWorkoutResponse = z.infer<typeof WorkoutsSchema>;
+export type WorkoutCountsResponse = z.infer<typeof WorkoutCountsSchema>;
