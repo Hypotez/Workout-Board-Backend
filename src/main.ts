@@ -2,15 +2,14 @@ import express from 'express'
 import cors from "cors"
 
 import env from './config/env'
+
 import { apiResponseMiddleware } from './middleware/middleware'
 import logger from './logger/logger'
-
 import user from './routes/user'
-
 import HevyClient from './service/hevyClient'
 
-
-import { Service, ResponseHelpers } from './types'
+import { Service } from './types/service'
+import { ResponseHelpers } from './types/express'
 
 const PORT = env.PORT
 const NODE_ENV = env.NODE_ENV
@@ -18,14 +17,6 @@ const FRONTEND_URL = env.FRONTEND_URL
 
 const HEVY_URL = env.HEVY_URL
 const HEVY_API_KEY = env.HEVY_API_KEY
-
-declare module 'express-serve-static-core' {
-  export interface Request {
-    service: Service
-  }
-
-  export interface Response extends ResponseHelpers{}
-}
 
 const app = express()
 
@@ -36,6 +27,14 @@ app.use(cors({
   credentials: true
 }));
 app.use(apiResponseMiddleware)
+
+declare module 'express-serve-static-core' {
+  export interface Request {
+    service: Service
+  }
+
+  export interface Response extends ResponseHelpers{}
+}
 
 app.use((req, _, next) => {
   req.service = {

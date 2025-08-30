@@ -1,12 +1,17 @@
-import { HevyClientService, Uuid, Url, SuccessResponse, SuccessString, ApiResponse, WorkoutResponseSchema, WorkoutResponse, AllWorkoutResponse, WorkoutCountsSchema, WorkoutCountsResponse } from "../types";
 import logger from '../logger/logger'
+import { EventsResponse, EventsResponseSchema } from '../schemas/hevy/event';
+import { AllWorkoutResponse, SingleWorkoutResponse, WorkoutCountsResponse, WorkoutCountsSchema, WorkoutResponse, WorkoutResponseSchema, WorkoutSchema } from '../schemas/hevy/workout';
+import { ApiResponse, SuccessResponse, SuccessString } from '../schemas/shared/api';
+import { UrlType, UuidType } from '../schemas/shared/common';
+
+import { HevyClientService } from '../types/service';
 
 
 export default class HevyClient implements HevyClientService {
-  private baseUrl: Url;
-  private apiKey: Uuid;
+  private baseUrl: UrlType;
+  private apiKey: UuidType;
 
-  constructor(url: Url, apiKey: Uuid) {
+  constructor(url: UrlType, apiKey: UuidType) {
     this.baseUrl = url;
     this.apiKey = apiKey;
   }
@@ -23,7 +28,14 @@ export default class HevyClient implements HevyClientService {
 
     let finalResponse: unknown = null;
     try {
-      finalResponse = await response.json()
+      const contentType = response.headers.get('Content-Type');
+
+      if (contentType?.includes('application/json')) {
+        finalResponse = await response.json()
+      } else if (contentType?.includes('text/plain')) {
+        finalResponse = await response.text()
+      }
+
     } catch (error) {
       logger.error('[HevyClient][FetchWithAuth][Content-Type]', error)
     }
@@ -91,4 +103,31 @@ export default class HevyClient implements HevyClientService {
     return null;
   }
 
+  async getWorkoutEvents(pageSize: number, page: number, since: Date): Promise<EventsResponse | null> {
+    const response = await this.fetchWithAuth(`/v1/workouts/events?pageSize=${pageSize}&page=${page}&since=${since}`, { method: "GET" });
+
+    if (response) {
+      const eventsResponse = EventsResponseSchema.safeParse(response.data);
+
+      if (eventsResponse.success) {
+        return eventsResponse.data;
+      }
+    }
+
+    return null;
+  }
+
+  async getSingleWorkoutById(workoutId: UuidType): Promise<SingleWorkoutResponse | null> {
+    const response = await this.fetchWithAuth(`/v1/workouts/${workoutId}`, { method: "GET" });
+
+    if (response) {
+      const workoutResponse = WorkoutSchema.safeParse(response.data);
+
+      if (workoutResponse.success) {
+        return workoutResponse.data;
+      }
+    }
+
+    return null;
+  }
 }

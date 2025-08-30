@@ -1,6 +1,6 @@
 import dotenv from 'dotenv'
 import { z } from "zod";
-import { urlSchema, uuidSchema, nonEmptyStringSchema } from "../types";
+import { nonEmptyStringSchema, urlSchema, uuidSchema } from '../schemas/shared/common';
 
 import logger from '../logger/logger'
 
