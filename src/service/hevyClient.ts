@@ -1,6 +1,6 @@
 import logger from '../logger/logger'
 import { EventsResponse, EventsResponseSchema } from '../schemas/hevy/event';
-import { AllWorkoutResponse, SingleWorkoutResponse, WorkoutCountsResponse, WorkoutCountsSchema, WorkoutResponse, WorkoutResponseSchema, WorkoutSchema } from '../schemas/hevy/workout';
+import { AllWorkoutResponse, SingleWorkoutResponse, WorkoutCountsResponse, WorkoutCountsSchema, WorkoutCreateResponseSchema, WorkoutPayload, WorkoutResponse, WorkoutResponseSchema, WorkoutSchema } from '../schemas/hevy/workout';
 import { ApiResponse, SuccessResponse, SuccessString } from '../schemas/shared/api';
 import { UrlType, UuidType } from '../schemas/shared/common';
 
@@ -21,6 +21,7 @@ export default class HevyClient implements HevyClientService {
     const headers = {
       ...options?.headers,
       'accept': 'application/json',
+      'content-type': 'application/json',
       'api-key': this.apiKey
     };
 
@@ -39,6 +40,8 @@ export default class HevyClient implements HevyClientService {
     } catch (error) {
       logger.error('[HevyClient][FetchWithAuth][Content-Type]', error)
     }
+
+    console.log(response)
 
     if (response.ok) {
       const returnResponse: SuccessResponse = {
@@ -130,4 +133,19 @@ export default class HevyClient implements HevyClientService {
 
     return null;
   }
+
+  async createWorkout(workoutPayload: WorkoutPayload): Promise<SingleWorkoutResponse | null> {
+    const response = await this.fetchWithAuth(`/v1/workouts`, { method: "POST", body: JSON.stringify(workoutPayload) });
+
+    if (response) {
+      const workoutResponse = WorkoutCreateResponseSchema.safeParse(response.data);
+
+      if (workoutResponse.success) {
+        return workoutResponse.data.workout[0];
+      }
+    }
+
+    return null;
+  }
+
 }

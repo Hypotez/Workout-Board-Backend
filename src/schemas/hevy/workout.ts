@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ExercisesSchema } from "./exercise";
+import { ExercisesSchema, CreateExercisesSchema } from "./exercise";
 import { dateSchema, uuidSchema } from "../shared/common";
 
 export const WorkoutSchema = z.object({
@@ -15,8 +15,19 @@ export const WorkoutSchema = z.object({
 
 const WorkoutsSchema = z.array(WorkoutSchema)
 
-export const createWorkoutSchema = z.object({
-  workout: WorkoutSchema
+const WorkoutCreateSchema = WorkoutSchema
+  .omit({ id: true, created_at: true, updated_at: true })
+  .extend({
+    is_private: z.boolean(),
+    exercises: CreateExercisesSchema
+  })
+
+export const WorkoutPayloadSchema = z.object({
+  workout: WorkoutCreateSchema
+});
+
+export const WorkoutCreateResponseSchema = z.object({
+  workout: WorkoutsSchema
 });
 
 export const WorkoutResponseSchema = z.object({
@@ -33,3 +44,4 @@ export type SingleWorkoutResponse = z.infer<typeof WorkoutSchema>;
 export type AllWorkoutResponse = z.infer<typeof WorkoutsSchema>;
 export type WorkoutCountsResponse = z.infer<typeof WorkoutCountsSchema>;
 export type WorkoutResponse = z.infer<typeof WorkoutResponseSchema>;
+export type WorkoutPayload = z.infer<typeof WorkoutPayloadSchema>;

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { SetsSchema } from "./set";
+import { SetsSchema, CreateSetsSchema } from "./set";
 
 const ExerciseSchema = z.object({
   index: z.number(),
@@ -10,4 +10,7 @@ const ExerciseSchema = z.object({
   sets: SetsSchema
 });
 
+const CreateExerciseSchema = ExerciseSchema.omit({ index: true, title: true }).extend({sets: CreateSetsSchema});
+
+export const CreateExercisesSchema = z.array(CreateExerciseSchema);
 export const ExercisesSchema = z.array(ExerciseSchema)

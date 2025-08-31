@@ -1,5 +1,5 @@
 import { EventsResponse } from "../schemas/hevy/event";
-import { AllWorkoutResponse, SingleWorkoutResponse, WorkoutCountsResponse, WorkoutResponse } from "../schemas/hevy/workout";
+import { AllWorkoutResponse, SingleWorkoutResponse, WorkoutCountsResponse, WorkoutPayload, WorkoutResponse } from "../schemas/hevy/workout";
 import { UuidType } from "../schemas/shared/common";
 
 
@@ -40,4 +40,10 @@ export interface HevyClientService {
      * @returns Hevy response
      */
     getSingleWorkoutById(workoutId: UuidType): Promise<SingleWorkoutResponse | null>;
+    /**
+     * Create a new workout.
+     * @param workoutId The ID of the workout to create.
+     * @returns Hevy response
+     */
+    createWorkout(workoutPayload: WorkoutPayload): Promise<SingleWorkoutResponse | null>;
 }

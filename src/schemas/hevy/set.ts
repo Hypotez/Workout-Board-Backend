@@ -11,4 +11,7 @@ const SetSchema = z.object({
   custom_metric: z.number().nullable()
 });
 
+const CreateSetSchema = SetSchema.omit({ index: true });
+
+export const CreateSetsSchema = z.array(CreateSetSchema);
 export const SetsSchema = z.array(SetSchema);
