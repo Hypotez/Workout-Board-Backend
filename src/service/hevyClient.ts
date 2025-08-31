@@ -41,8 +41,6 @@ export default class HevyClient implements HevyClientService {
       logger.error('[HevyClient][FetchWithAuth][Content-Type]', error)
     }
 
-    console.log(response)
-
     if (response.ok) {
       const returnResponse: SuccessResponse = {
         status: SuccessString,
@@ -136,6 +134,20 @@ export default class HevyClient implements HevyClientService {
 
   async createWorkout(workoutPayload: WorkoutPayload): Promise<SingleWorkoutResponse | null> {
     const response = await this.fetchWithAuth(`/v1/workouts`, { method: "POST", body: JSON.stringify(workoutPayload) });
+
+    if (response) {
+      const workoutResponse = WorkoutCreateResponseSchema.safeParse(response.data);
+
+      if (workoutResponse.success) {
+        return workoutResponse.data.workout[0];
+      }
+    }
+
+    return null;
+  }
+
+  async updateWorkout(workoutId: UuidType, workoutPayload: WorkoutPayload): Promise<SingleWorkoutResponse | null> {
+    const response = await this.fetchWithAuth(`/v1/workouts/${workoutId}`, { method: "PUT", body: JSON.stringify(workoutPayload) });
 
     if (response) {
       const workoutResponse = WorkoutCreateResponseSchema.safeParse(response.data);

@@ -46,4 +46,10 @@ export interface HevyClientService {
      * @returns Hevy response
      */
     createWorkout(workoutPayload: WorkoutPayload): Promise<SingleWorkoutResponse | null>;
+    /**
+     * Update an existing workout.
+     * @param workoutId The ID of the workout to update.
+     * @returns Hevy response
+     */
+    updateWorkout(workoutId: UuidType, workoutPayload: WorkoutPayload): Promise<SingleWorkoutResponse | null>;
 }
