@@ -1,64 +1,23 @@
-import logger from '../logger/logger'
-import { EventsResponse, EventsResponseSchema } from '../schemas/hevy/event';
-import { AllWorkoutResponse, SingleWorkoutResponse, WorkoutCountsResponse, WorkoutCountsSchema, WorkoutCreateResponseSchema, WorkoutPayload, WorkoutResponse, WorkoutResponseSchema, WorkoutSchema } from '../schemas/hevy/workout';
-import { ApiResponse, SuccessResponse, SuccessString } from '../schemas/shared/api';
-import { UrlType, UuidType } from '../schemas/shared/common';
+import HttpClient from '../httpClient';
 
-import { HevyClientService } from '../types/service';
+import { 
+  AllWorkoutResponse, 
+  SingleWorkoutResponse, 
+  WorkoutCountsResponse, 
+  WorkoutCountsSchema, 
+  WorkoutCreateResponseSchema, 
+  WorkoutPayload, 
+  WorkoutResponse, 
+  WorkoutResponseSchema, 
+  WorkoutSchema 
+} from '../../schemas/hevy/workout';
 
+import { IHevyWorkoutService } from '../../types/service';
 
-export default class HevyClient implements HevyClientService {
-  private baseUrl: UrlType;
-  private apiKey: UuidType;
+import { UuidType } from '../../schemas/shared/common';
+import { EventsResponse, EventsResponseSchema } from '../../schemas/hevy/event';
 
-  constructor(url: UrlType, apiKey: UuidType) {
-    this.baseUrl = url;
-    this.apiKey = apiKey;
-  }
-
-  private async fetchWithAuth(endpoint: string, options?: RequestInit): Promise<ApiResponse> {
-    const fullPath = this.baseUrl + endpoint;
-    const headers = {
-      ...options?.headers,
-      'accept': 'application/json',
-      'content-type': 'application/json',
-      'api-key': this.apiKey
-    };
-
-    const response = await fetch(fullPath, { ...options, headers });
-
-    let finalResponse: unknown = null;
-    try {
-      const contentType = response.headers.get('Content-Type');
-
-      if (contentType?.includes('application/json')) {
-        finalResponse = await response.json()
-      } else if (contentType?.includes('text/plain')) {
-        finalResponse = await response.text()
-      }
-
-    } catch (error) {
-      logger.error('[HevyClient][FetchWithAuth][Content-Type]', error)
-    }
-
-    if (response.ok) {
-      const returnResponse: SuccessResponse = {
-        status: SuccessString,
-        data: null
-      }
-
-      if (finalResponse) {
-        returnResponse.data = finalResponse
-      }
-
-      return returnResponse
-    }
-
-    logger.error(`[HevyClient][FetchWithAuth][Response] Status: ${response.status} , Text: ${response.statusText} `)
-
-    return null
-  }
-
+export default class HevyWorkoutService extends HttpClient implements IHevyWorkoutService {
   async getWorkouts(page: number, pageSize: number): Promise<WorkoutResponse | null> {
     const response = await this.fetchWithAuth(`/v1/workouts?page=${page}&pageSize=${pageSize}`, { method: "GET" });
 
@@ -98,20 +57,6 @@ export default class HevyClient implements HevyClientService {
 
       if (workoutCountsResponse.success) {
         return workoutCountsResponse.data;
-      }
-    }
-
-    return null;
-  }
-
-  async getWorkoutEvents(pageSize: number, page: number, since: Date): Promise<EventsResponse | null> {
-    const response = await this.fetchWithAuth(`/v1/workouts/events?pageSize=${pageSize}&page=${page}&since=${since}`, { method: "GET" });
-
-    if (response) {
-      const eventsResponse = EventsResponseSchema.safeParse(response.data);
-
-      if (eventsResponse.success) {
-        return eventsResponse.data;
       }
     }
 
@@ -160,4 +105,17 @@ export default class HevyClient implements HevyClientService {
     return null;
   }
 
+  async getWorkoutEvents(pageSize: number, page: number, since: Date): Promise<EventsResponse | null> {
+    const response = await this.fetchWithAuth(`/v1/workouts/events?pageSize=${pageSize}&page=${page}&since=${since}`, { method: "GET" });
+
+    if (response) {
+      const eventsResponse = EventsResponseSchema.safeParse(response.data);
+
+      if (eventsResponse.success) {
+        return eventsResponse.data;
+      }
+    }
+
+    return null;
+  }
 }

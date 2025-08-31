@@ -2,12 +2,9 @@ import { EventsResponse } from "../schemas/hevy/event";
 import { AllWorkoutResponse, SingleWorkoutResponse, WorkoutCountsResponse, WorkoutPayload, WorkoutResponse } from "../schemas/hevy/workout";
 import { UuidType } from "../schemas/shared/common";
 
+import HevyWorkoutService from "../service/hevy/hevyWorkout";
 
-export interface Service {
-    hevyClient: HevyClientService;
-}
-
-export interface HevyClientService {
+export interface IHevyWorkoutService {
     /**
      * Get a paginated list of workouts.
      * @param page Page number (Must be 1 or greater)
@@ -52,4 +49,12 @@ export interface HevyClientService {
      * @returns Hevy response
      */
     updateWorkout(workoutId: UuidType, workoutPayload: WorkoutPayload): Promise<SingleWorkoutResponse | null>;
+}
+
+export interface Service {
+    hevyClient: HevyClientService;
+}
+
+export interface HevyClientService {
+    workouts: HevyWorkoutService;
 }

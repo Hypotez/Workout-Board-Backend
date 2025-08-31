@@ -6,7 +6,7 @@ import env from './config/env'
 import { apiResponseMiddleware } from './middleware/middleware'
 import logger from './logger/logger'
 import user from './routes/user'
-import HevyClient from './service/hevyClient'
+import HevyClient from './service/hevy/hevyClient'
 
 import { Service } from './types/service'
 import { ResponseHelpers } from './types/express'
