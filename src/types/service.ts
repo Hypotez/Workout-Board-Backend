@@ -1,10 +1,12 @@
 import { EventsResponse } from "../schemas/hevy/event";
+import { GetRoutineResponse, GetRoutinesResponse } from "../schemas/hevy/routine";
 import { AllWorkoutResponse, SingleWorkoutResponse, WorkoutCountsResponse, WorkoutPayload, WorkoutResponse } from "../schemas/hevy/workout";
 import { UuidType } from "../schemas/shared/common";
 
-import HevyWorkoutService from "../service/hevy/hevyWorkout";
+import HevyWorkoutService from "../service/hevy/hevyWorkouts";
+import HevyRoutinesService from "../service/hevy/hevyRoutines";
 
-export interface IHevyWorkoutService {
+export interface IHevyWorkoutsService {
     /**
      * Get a paginated list of workouts.
      * @param page Page number (Must be 1 or greater)
@@ -51,10 +53,27 @@ export interface IHevyWorkoutService {
     updateWorkout(workoutId: UuidType, workoutPayload: WorkoutPayload): Promise<SingleWorkoutResponse | null>;
 }
 
+export interface IHevyRoutinesService {
+    /**
+     * Get a paginated list of routines.
+     * @param page Page number (Must be 1 or greater)
+     * @param pageSize Number of items on the requested page (Max 10)
+     * @returns Hevy response
+    */
+    getRoutines(page: number, pageSize: number): Promise<GetRoutinesResponse | null>;
+    /**
+     * Get a routine by its Id.
+     * @param routineId The ID of the routine to retrieve.
+     * @returns Hevy response
+    */
+    getRoutineById(routineId: UuidType): Promise<GetRoutineResponse | null>;
+}
+
 export interface Service {
     hevyClient: HevyClientService;
 }
 
 export interface HevyClientService {
     workouts: HevyWorkoutService;
+    routines: HevyRoutinesService;
 }

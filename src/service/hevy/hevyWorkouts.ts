@@ -12,12 +12,12 @@ import {
   WorkoutSchema 
 } from '../../schemas/hevy/workout';
 
-import { IHevyWorkoutService } from '../../types/service';
+import { IHevyWorkoutsService } from '../../types/service';
 
 import { UuidType } from '../../schemas/shared/common';
 import { EventsResponse, EventsResponseSchema } from '../../schemas/hevy/event';
 
-export default class HevyWorkoutService extends HttpClient implements IHevyWorkoutService {
+export default class HevyWorkoutService extends HttpClient implements IHevyWorkoutsService {
   async getWorkouts(page: number, pageSize: number): Promise<WorkoutResponse | null> {
     const response = await this.fetchWithAuth(`/v1/workouts?page=${page}&pageSize=${pageSize}`, { method: "GET" });
 
