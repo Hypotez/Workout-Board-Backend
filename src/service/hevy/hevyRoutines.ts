@@ -4,7 +4,11 @@ import {
   GetRoutineResponse,
     GetRoutinesResponse,
     GetRoutinesResponseSchema,
-    GetRoutineResponseSchema
+    GetRoutineResponseSchema,
+    CreateRoutineResponseSchema,
+    CreateRoutine,
+    CreateRoutineResponse,
+    UpdateRoutine
 } from '../../schemas/hevy/routine';
 
 import {
@@ -43,4 +47,31 @@ export default class HevyRoutinesService extends HttpClient implements IHevyRout
     return null;
   }
 
+  async createRoutine(workoutPayload: CreateRoutine): Promise<CreateRoutineResponse | null>  {
+    const response = await this.fetchWithAuth(`/v1/routines`, { method: "POST", body: JSON.stringify(workoutPayload) });
+
+    if (response) {
+      const routineResponse = CreateRoutineResponseSchema.safeParse(response.data);
+
+      if (routineResponse.success) {
+        return routineResponse.data;
+      }
+    }
+
+    return null;
+  }
+
+  async updateRoutine(routineId: UuidType, workoutPayload: UpdateRoutine): Promise<CreateRoutineResponse | null> {
+    const response = await this.fetchWithAuth(`/v1/routines/${routineId}`, { method: "PUT", body: JSON.stringify(workoutPayload) });
+
+    if (response) {
+      const routineResponse = CreateRoutineResponseSchema.safeParse(response.data);
+
+      if (routineResponse.success) {
+        return routineResponse.data;
+      }
+    }
+
+    return null;
+  }
 }
