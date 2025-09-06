@@ -1,10 +1,11 @@
-import { EventsResponse } from "../schemas/hevy/event";
-import { GetRoutineResponse, GetRoutinesResponse } from "../schemas/hevy/routine";
-import { AllWorkoutResponse, SingleWorkoutResponse, WorkoutCountsResponse, WorkoutPayload, WorkoutResponse } from "../schemas/hevy/workout";
+import { GetEvents } from "../schemas/hevy/event";
+import { CreateRoutine, CreateRoutineResponse, GetRoutineResponse, GetRoutinesResponse, UpdateRoutine } from "../schemas/hevy/routine";
+import { CreateOrUpdateWorkout, GetAllWorkouts, GetPaginatedWorkouts, GetWorkout, GetWorkoutsCounts } from "../schemas/hevy/workout";
 import { UuidType } from "../schemas/shared/common";
 
 import HevyWorkoutService from "../service/hevy/hevyWorkouts";
 import HevyRoutinesService from "../service/hevy/hevyRoutines";
+import { GetExerciseTemplate, GetExerciseTemplates } from "../schemas/hevy/exerciseTemplates";
 
 export interface IHevyWorkoutsService {
     /**
@@ -13,18 +14,18 @@ export interface IHevyWorkoutsService {
      * @param pageSize Number of items on the requested page (Max 10)
      * @returns Hevy response
     */
-    getWorkouts(page: number, pageSize: number): Promise<WorkoutResponse | null>;
+    getWorkouts(page: number, pageSize: number): Promise<GetPaginatedWorkouts | null>;
     /**
      * Get a list of all workouts.
      * @param pageSize Number of items on the requested page (Max 10)
      * @returns Hevy response
     */
-    getAllWorkouts(pageSize: number): Promise<AllWorkoutResponse | null>;
+    getAllWorkouts(pageSize: number): Promise<GetAllWorkouts | null>;
     /**
      * Get the total number of workouts on the account.
      * @returns Hevy response
     */
-    getWorkoutsCount(): Promise<WorkoutCountsResponse | null>;
+    getWorkoutsCount(): Promise<GetWorkoutsCounts | null>;
     /**
      * Get workout events.
      * @param pageSize Number of items on the requested page (Max 10)
@@ -32,25 +33,25 @@ export interface IHevyWorkoutsService {
      * @param since Only return events that occurred after this date
      * @returns Hevy response
      */
-    getWorkoutEvents(pageSize: number, page: number, since: Date): Promise<EventsResponse | null>;
+    getWorkoutEvents(pageSize: number, page: number, since: Date): Promise<GetEvents | null>;
     /**
      * Get a single workout by ID.
      * @param workoutId The ID of the workout to retrieve.
      * @returns Hevy response
      */
-    getSingleWorkoutById(workoutId: UuidType): Promise<SingleWorkoutResponse | null>;
+    getSingleWorkoutById(workoutId: UuidType): Promise<GetWorkout | null>;
     /**
      * Create a new workout.
      * @param workoutId The ID of the workout to create.
      * @returns Hevy response
      */
-    createWorkout(workoutPayload: WorkoutPayload): Promise<SingleWorkoutResponse | null>;
+    createWorkout(workoutPayload: CreateOrUpdateWorkout): Promise<GetWorkout | null>;
     /**
      * Update an existing workout.
      * @param workoutId The ID of the workout to update.
      * @returns Hevy response
      */
-    updateWorkout(workoutId: UuidType, workoutPayload: WorkoutPayload): Promise<SingleWorkoutResponse | null>;
+    updateWorkout(workoutId: UuidType, workoutPayload: CreateOrUpdateWorkout): Promise<GetWorkout | null>;
 }
 
 export interface IHevyRoutinesService {
@@ -67,6 +68,35 @@ export interface IHevyRoutinesService {
      * @returns Hevy response
     */
     getRoutineById(routineId: UuidType): Promise<GetRoutineResponse | null>;
+    /**
+    * Create a new routine.
+    * @param routinePayload The payload of the routine to create.
+    * @returns Hevy response
+    */
+    createRoutine(routinePayload: CreateRoutine): Promise<CreateRoutineResponse | null>;
+    /**
+     * Update an existing routine.
+     * @param routineId The ID of the routine to update.
+     * @param routinePayload The updated routine data.
+     * @returns Hevy response
+    */
+    updateRoutine(routineId: UuidType, routinePayload: UpdateRoutine): Promise<CreateRoutineResponse | null>;
+}
+
+export interface IHevyExerciseTemplatesService {
+    /**
+     * Get a paginated list of exercise templates.
+     * @param page Page number (Must be 1 or greater)
+     * @param pageSize Number of items on the requested page (Max 10)
+     * @returns Hevy response
+    */
+    getExerciseTemplates(page: number, pageSize: number): Promise<GetExerciseTemplates | null>;
+    /**
+     * Get a single exercise template by ID.
+     * @param templateId The ID of the exercise template to retrieve.
+     * @returns Hevy response
+    */
+    getExerciseTemplateById(templateId: string): Promise<GetExerciseTemplate | null>;
 }
 
 export interface Service {
@@ -76,4 +106,5 @@ export interface Service {
 export interface HevyClientService {
     workouts: HevyWorkoutService;
     routines: HevyRoutinesService;
+    exerciseTemplates: IHevyExerciseTemplatesService;
 }

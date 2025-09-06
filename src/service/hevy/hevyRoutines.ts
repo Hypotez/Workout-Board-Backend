@@ -47,8 +47,8 @@ export default class HevyRoutinesService extends HttpClient implements IHevyRout
     return null;
   }
 
-  async createRoutine(workoutPayload: CreateRoutine): Promise<CreateRoutineResponse | null>  {
-    const response = await this.fetchWithAuth(`/v1/routines`, { method: "POST", body: JSON.stringify(workoutPayload) });
+  async createRoutine(routinePayload: CreateRoutine): Promise<CreateRoutineResponse | null>  {
+    const response = await this.fetchWithAuth(`/v1/routines`, { method: "POST", body: JSON.stringify(routinePayload) });
 
     if (response) {
       const routineResponse = CreateRoutineResponseSchema.safeParse(response.data);
@@ -61,8 +61,8 @@ export default class HevyRoutinesService extends HttpClient implements IHevyRout
     return null;
   }
 
-  async updateRoutine(routineId: UuidType, workoutPayload: UpdateRoutine): Promise<CreateRoutineResponse | null> {
-    const response = await this.fetchWithAuth(`/v1/routines/${routineId}`, { method: "PUT", body: JSON.stringify(workoutPayload) });
+  async updateRoutine(routineId: UuidType, routinePayload: UpdateRoutine): Promise<CreateRoutineResponse | null> {
+    const response = await this.fetchWithAuth(`/v1/routines/${routineId}`, { method: "PUT", body: JSON.stringify(routinePayload) });
 
     if (response) {
       const routineResponse = CreateRoutineResponseSchema.safeParse(response.data);
