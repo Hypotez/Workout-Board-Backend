@@ -1,19 +1,30 @@
-function info(...args: (string | number | object)[]): void {
-  console.log(`[${new Date().toISOString()}]`, '[INFO]', ...args)
-}
+import env from '../config/env'
+import winston from 'winston'
 
-function error(...args: (string | number | unknown | object)[]): void {
-  console.error(`[${new Date().toISOString()}]`, '[ERROR]', ...args)
-}
+const { combine, timestamp, printf, colorize, errors } = winston.format;
 
-function debug(...args: (string | number | object)[]): void {
-  if (process.env.NODE_ENV !== 'production') {
-    console.log(`[${new Date().toISOString()}]`, '[DEBUG]', ...args)
-  }
-}
+const logger = winston.createLogger({
+  level: env.LOG_LEVEL,
+  format: combine(
+    colorize({ all: false }),
+    timestamp(),
+    errors({ stack: true }),
+    printf((info) => {
+      if (info.stack) {
+        return `[${info.timestamp}] [${info.level}]: ${info.stack}`;
+      }
+      return `[${info.timestamp}] [${info.level}]: ${info.message}`;
+    })
+  ),
+  transports: [
+    new winston.transports.Console()
+  ],
+  exceptionHandlers: [
+    new winston.transports.Console(),
+  ],
+  rejectionHandlers: [
+    new winston.transports.Console(),
+  ],
+})
 
-export default {
-  info,
-  error,
-  debug
-}
+export default logger;
