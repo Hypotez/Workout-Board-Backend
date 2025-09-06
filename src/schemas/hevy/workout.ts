@@ -2,7 +2,7 @@ import { z } from "zod";
 import { ExercisesSchema, CreateExercisesSchema } from "./exercise";
 import { dateSchema, uuidSchema } from "../shared/common";
 
-export const WorkoutSchema = z.object({
+export const GetWorkoutSchema = z.object({
   id: uuidSchema,
   title: z.string(),
   description: z.string(),
@@ -13,35 +13,35 @@ export const WorkoutSchema = z.object({
   exercises: ExercisesSchema
 })
 
-const WorkoutsSchema = z.array(WorkoutSchema)
+const GetAllWorkoutsSchema = z.array(GetWorkoutSchema)
 
-const WorkoutCreateSchema = WorkoutSchema
+const CreateWorkoutSchema = GetWorkoutSchema
   .omit({ id: true, created_at: true, updated_at: true })
   .extend({
     is_private: z.boolean(),
     exercises: CreateExercisesSchema
   })
 
-export const WorkoutPayloadSchema = z.object({
-  workout: WorkoutCreateSchema
+export const CreateOrUpdateWorkoutSchema = z.object({
+  workout: CreateWorkoutSchema
 });
 
-export const WorkoutCreateResponseSchema = z.object({
-  workout: WorkoutsSchema
+export const CreateOrUpdateWorkoutResponseSchema = z.object({
+  workout: GetAllWorkoutsSchema
 });
 
-export const WorkoutResponseSchema = z.object({
+export const GetPaginatedWorkoutsResponseSchema = z.object({
   page: z.number(),
   page_count: z.number(),
-  workouts: WorkoutsSchema
+  workouts: GetAllWorkoutsSchema
 })
 
-export const WorkoutCountsSchema = z.object({
+export const GetWorkoutsCountsSchema = z.object({
   workout_count: z.number()
 });
 
-export type SingleWorkoutResponse = z.infer<typeof WorkoutSchema>;
-export type AllWorkoutResponse = z.infer<typeof WorkoutsSchema>;
-export type WorkoutCountsResponse = z.infer<typeof WorkoutCountsSchema>;
-export type WorkoutResponse = z.infer<typeof WorkoutResponseSchema>;
-export type WorkoutPayload = z.infer<typeof WorkoutPayloadSchema>;
+export type GetWorkout = z.infer<typeof GetWorkoutSchema>;
+export type GetAllWorkouts = z.infer<typeof GetAllWorkoutsSchema>;
+export type GetWorkoutsCounts = z.infer<typeof GetWorkoutsCountsSchema>;
+export type GetPaginatedWorkouts = z.infer<typeof GetPaginatedWorkoutsResponseSchema>;
+export type CreateOrUpdateWorkout = z.infer<typeof CreateOrUpdateWorkoutSchema>;

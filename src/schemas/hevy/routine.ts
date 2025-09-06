@@ -13,11 +13,11 @@ const GetRoutineSchema = z.object({
 
 const GetRoutinesSchema = z.array(GetRoutineSchema);
 
-export const CreateRoutinesPayloadSchema = z.object({
+export const CreateRoutineSchema = z.object({
   routine: GetRoutineSchema.omit({ id: true, created_at: true, updated_at: true }).extend({exercises: CreateRoutineExercisesSchema})
 });
 
-export const UpdateRoutinesPayloadSchema = z.object({
+export const UpdateRoutineSchema = z.object({
   routine: GetRoutineSchema.omit({ id: true, created_at: true, updated_at: true, folder_id: true }).extend({exercises: CreateRoutineExercisesSchema})
 });
 export const GetRoutineResponseSchema = z.object({
@@ -36,6 +36,7 @@ export const GetRoutinesResponseSchema = z.object({
 
 export type GetRoutinesResponse = z.infer<typeof GetRoutinesResponseSchema>;
 export type GetRoutineResponse = z.infer<typeof GetRoutineResponseSchema>;
-export type CreateRoutine = z.infer<typeof CreateRoutinesPayloadSchema>;
 export type CreateRoutineResponse = z.infer<typeof CreateRoutineResponseSchema>;
-export type UpdateRoutine = z.infer<typeof UpdateRoutinesPayloadSchema>;
+
+export type CreateRoutine = z.infer<typeof CreateRoutineSchema>;
+export type UpdateRoutine = z.infer<typeof UpdateRoutineSchema>;

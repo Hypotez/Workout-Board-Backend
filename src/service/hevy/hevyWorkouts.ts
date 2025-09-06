@@ -1,28 +1,28 @@
 import HttpClient from '../httpClient';
 
 import { 
-  AllWorkoutResponse, 
-  SingleWorkoutResponse, 
-  WorkoutCountsResponse, 
-  WorkoutCountsSchema, 
-  WorkoutCreateResponseSchema, 
-  WorkoutPayload, 
-  WorkoutResponse, 
-  WorkoutResponseSchema, 
-  WorkoutSchema 
+  GetWorkoutsCounts,
+  GetWorkoutsCountsSchema,
+  CreateOrUpdateWorkoutResponseSchema, 
+  CreateOrUpdateWorkout,
+  GetPaginatedWorkouts,
+  GetWorkout,
+  GetWorkoutSchema,
+  GetPaginatedWorkoutsResponseSchema,
+  GetAllWorkouts
 } from '../../schemas/hevy/workout';
 
 import { IHevyWorkoutsService } from '../../types/service';
 
 import { UuidType } from '../../schemas/shared/common';
-import { EventsResponse, EventsResponseSchema } from '../../schemas/hevy/event';
+import { GetEvents, EventsSchema } from '../../schemas/hevy/event';
 
 export default class HevyWorkoutService extends HttpClient implements IHevyWorkoutsService {
-  async getWorkouts(page: number, pageSize: number): Promise<WorkoutResponse | null> {
+  async getWorkouts(page: number, pageSize: number): Promise<GetPaginatedWorkouts | null> {
     const response = await this.fetchWithAuth(`/v1/workouts?page=${page}&pageSize=${pageSize}`, { method: "GET" });
 
     if (response) {
-      const workoutResponse = WorkoutResponseSchema.safeParse(response.data)
+      const workoutResponse = GetPaginatedWorkoutsResponseSchema.safeParse(response.data)
 
       if (workoutResponse.success) {
         return workoutResponse.data
@@ -32,8 +32,8 @@ export default class HevyWorkoutService extends HttpClient implements IHevyWorko
     return null
   }
 
-  async getAllWorkouts(pageSize: number): Promise<AllWorkoutResponse | null> {
-    const result: AllWorkoutResponse = []
+  async getAllWorkouts(pageSize: number): Promise<GetAllWorkouts | null> {
+    const result: GetAllWorkouts = [];
     let page = 1;
     let pageCount = 1;
 
@@ -49,11 +49,11 @@ export default class HevyWorkoutService extends HttpClient implements IHevyWorko
     return result.length > 0 ? result : null;
   }
 
-  async getWorkoutsCount(): Promise<WorkoutCountsResponse | null> {
+  async getWorkoutsCount(): Promise<GetWorkoutsCounts | null> {
     const response = await this.fetchWithAuth(`/v1/workouts/count`, { method: "GET" });
 
     if (response) {
-      const workoutCountsResponse = WorkoutCountsSchema.safeParse(response.data);
+      const workoutCountsResponse = GetWorkoutsCountsSchema.safeParse(response.data);
 
       if (workoutCountsResponse.success) {
         return workoutCountsResponse.data;
@@ -63,11 +63,11 @@ export default class HevyWorkoutService extends HttpClient implements IHevyWorko
     return null;
   }
 
-  async getSingleWorkoutById(workoutId: UuidType): Promise<SingleWorkoutResponse | null> {
+  async getSingleWorkoutById(workoutId: UuidType): Promise<GetWorkout | null> {
     const response = await this.fetchWithAuth(`/v1/workouts/${workoutId}`, { method: "GET" });
 
     if (response) {
-      const workoutResponse = WorkoutSchema.safeParse(response.data);
+      const workoutResponse = GetWorkoutSchema.safeParse(response.data);
 
       if (workoutResponse.success) {
         return workoutResponse.data;
@@ -77,11 +77,11 @@ export default class HevyWorkoutService extends HttpClient implements IHevyWorko
     return null;
   }
 
-  async createWorkout(workoutPayload: WorkoutPayload): Promise<SingleWorkoutResponse | null> {
+  async createWorkout(workoutPayload: CreateOrUpdateWorkout): Promise<GetWorkout | null> {
     const response = await this.fetchWithAuth(`/v1/workouts`, { method: "POST", body: JSON.stringify(workoutPayload) });
 
     if (response) {
-      const workoutResponse = WorkoutCreateResponseSchema.safeParse(response.data);
+      const workoutResponse = CreateOrUpdateWorkoutResponseSchema.safeParse(response.data);
 
       if (workoutResponse.success) {
         return workoutResponse.data.workout[0];
@@ -91,11 +91,11 @@ export default class HevyWorkoutService extends HttpClient implements IHevyWorko
     return null;
   }
 
-  async updateWorkout(workoutId: UuidType, workoutPayload: WorkoutPayload): Promise<SingleWorkoutResponse | null> {
+  async updateWorkout(workoutId: UuidType, workoutPayload: CreateOrUpdateWorkout): Promise<GetWorkout | null> {
     const response = await this.fetchWithAuth(`/v1/workouts/${workoutId}`, { method: "PUT", body: JSON.stringify(workoutPayload) });
 
     if (response) {
-      const workoutResponse = WorkoutCreateResponseSchema.safeParse(response.data);
+      const workoutResponse = CreateOrUpdateWorkoutResponseSchema.safeParse(response.data);
 
       if (workoutResponse.success) {
         return workoutResponse.data.workout[0];
@@ -105,11 +105,11 @@ export default class HevyWorkoutService extends HttpClient implements IHevyWorko
     return null;
   }
 
-  async getWorkoutEvents(pageSize: number, page: number, since: Date): Promise<EventsResponse | null> {
+  async getWorkoutEvents(pageSize: number, page: number, since: Date): Promise<GetEvents | null> {
     const response = await this.fetchWithAuth(`/v1/workouts/events?pageSize=${pageSize}&page=${page}&since=${since}`, { method: "GET" });
 
     if (response) {
-      const eventsResponse = EventsResponseSchema.safeParse(response.data);
+      const eventsResponse = EventsSchema.safeParse(response.data);
 
       if (eventsResponse.success) {
         return eventsResponse.data;

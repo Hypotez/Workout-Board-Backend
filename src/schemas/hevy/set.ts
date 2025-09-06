@@ -11,11 +11,11 @@ const SetSchema = z.object({
   custom_metric: z.number().nullable()
 });
 
-const CreateSetSchema = SetSchema.omit({ index: true });
+const CreateWorkoutSetSchema = SetSchema.omit({ index: true });
 const GetRoutineSetSchema = SetSchema.omit({ rpe: true });
 const CreateRoutineSetSchema = GetRoutineSetSchema.omit({ index: true });
 
-export const CreateSetsSchema = z.array(CreateSetSchema);
 export const SetsSchema = z.array(SetSchema);
+export const CreateWorkoutSetsSchema = z.array(CreateWorkoutSetSchema);
 export const GetRoutineSetsSchema = z.array(GetRoutineSetSchema);
 export const CreateRoutineSetsSchema = z.array(CreateRoutineSetSchema);
