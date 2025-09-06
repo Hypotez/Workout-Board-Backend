@@ -2,7 +2,6 @@ import HttpClient from '../httpClient';
 
 import { IHevyExerciseTemplatesService } from '../../types/service';
 import { GetExerciseTemplate, GetExerciseTemplates, GetExerciseTemplateSchema, GetExerciseTemplatesSchema } from '../../schemas/hevy/exerciseTemplates';
-import { UuidType } from '../../schemas/shared/common';
 
 export default class HevyExerciseTemplatesService extends HttpClient implements IHevyExerciseTemplatesService {
   async getExerciseTemplates(page: number, pageSize: number): Promise<GetExerciseTemplates | null> {

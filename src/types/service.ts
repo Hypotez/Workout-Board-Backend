@@ -6,6 +6,7 @@ import { UuidType } from "../schemas/shared/common";
 import HevyWorkoutService from "../service/hevy/hevyWorkouts";
 import HevyRoutinesService from "../service/hevy/hevyRoutines";
 import { GetExerciseTemplate, GetExerciseTemplates } from "../schemas/hevy/exerciseTemplates";
+import { GetExercisesHistory } from "../schemas/hevy/exerciseHistory";
 
 export interface IHevyWorkoutsService {
     /**
@@ -99,6 +100,17 @@ export interface IHevyExerciseTemplatesService {
     getExerciseTemplateById(templateId: string): Promise<GetExerciseTemplate | null>;
 }
 
+export interface IHevyExerciseHistoryService {
+    /**
+     * Get exercise history for a specific exercise template.
+     * @param templateId The ID of the exercise template to retrieve history for.
+     * @param start_date The start date for the history retrieval.
+     * @param end_date The end date for the history retrieval.
+     * @returns Hevy response
+    */
+    getExerciseHistory(templateId: string, start_date?: Date, end_date?: Date): Promise<GetExercisesHistory | null>;
+}
+
 export interface Service {
     hevyClient: HevyClientService;
 }
@@ -107,4 +119,5 @@ export interface HevyClientService {
     workouts: HevyWorkoutService;
     routines: HevyRoutinesService;
     exerciseTemplates: IHevyExerciseTemplatesService;
+    exerciseHistory: IHevyExerciseHistoryService;
 }
