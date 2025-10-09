@@ -8,3 +8,4 @@ export const nonEmptyStringSchema = z.string().min(1, "String cannot be empty").
 export type DateType = z.infer<typeof dateSchema>;
 export type UrlType = z.infer<typeof urlSchema>;
 export type UuidType = z.infer<typeof uuidSchema>;
+export type NonEmptyString = z.infer<typeof nonEmptyStringSchema>;

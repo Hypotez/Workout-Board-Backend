@@ -10,6 +10,8 @@ const EnvSchema = z.object({
     FRONTEND_URL: urlSchema,
     HEVY_URL: urlSchema,
     HEVY_API_KEY: uuidSchema,
+    JWT_ACCESS_SECRET: nonEmptyStringSchema,
+    JWT_REFRESH_SECRET: nonEmptyStringSchema,
     LOG_LEVEL: z.enum(['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly']).default('info')
 })
 
