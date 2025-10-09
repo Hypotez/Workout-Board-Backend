@@ -55,3 +55,5 @@ router.post('/logout', async (_, res): Promise<void> => {
 router.get('/validate', cookieAuth, async (_, res): Promise<void> => {
     return res.success()
 })
+
+export default router

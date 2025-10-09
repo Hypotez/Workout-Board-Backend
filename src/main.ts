@@ -3,9 +3,10 @@ import cors from "cors"
 
 import env from './config/env'
 
-import { apiResponseMiddleware } from './middleware/middleware'
+import { apiResponseMiddleware, cookieAuth } from './middleware/middleware'
 import logger from './logger/logger'
 import user from './routes/user'
+import auth from './routes/auth'
 import HevyClient from './service/hevy/hevyClient'
 
 import { Service } from './types/service'
@@ -44,8 +45,8 @@ app.use((req, _, next) => {
   next()
 })
 
-app.use('/api/v1/user', user)
-
+app.use('/api/v1/auth', auth)
+app.use('/api/v1/user', cookieAuth, user)
 
 app.listen(PORT, () => {
   logger.info(`Server is running on http://localhost:${PORT} NODE_ENV=${NODE_ENV}`)
