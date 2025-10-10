@@ -1,14 +1,21 @@
 {
   "name": "workout-board-backend",
   "version": "1.0.0",
-  "description": "1. Rename .env.template to .env and change the variables.",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "dev": "npx ts-node-dev --respawn src/main.ts",
     "build": "tsc",
-    "lint": "eslint src --ext .ts,.js --fix",
+    "lint": "eslint src --ext .ts,.js",
+    "lint:fix": "eslint src --ext .ts,.js --fix",
     "format": "prettier --write \"src/**/*.{ts,js,json}\"",
-    "app": "tsc && node ./dist/main.js"
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "*.{ts,js,json}": [
+      "prettier --write",
+      "eslint --fix"
+    ]
   },
   "keywords": [],
   "author": "",
@@ -33,7 +40,9 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "globals": "^16.4.0",
+    "husky": "^9.1.7",
     "jiti": "^2.6.1",
+    "lint-staged": "^16.2.3",
     "nodemon": "^3.1.10",
     "prettier": "^3.6.2",
     "typescript": "^5.9.2",
