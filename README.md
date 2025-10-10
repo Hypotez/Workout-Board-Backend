@@ -1,14 +1,48 @@
-### Setup
-#### Prerequisite
-1. npm install
-2. Rename .env.template to .env and change the variables.
+## Setup
+1. Install all the project dependencies (Optional: fill in the environment variables):
+```bash
+npm install
+```
 
+2. Start the postgresql database:
+```bash
+docker compose up -d --build
+```
 
-#### Hot-reload for development
-3. npm run dev
+### Development
 
-#### Build and Run
-3. npm run app
+Start the development server with hot reload:
 
-#### Build
-3. npm run build
+```bash
+npm run dev
+```
+
+### Production Build
+
+Compile TypeScript and build the production bundle:
+
+```bash
+npm run build
+```
+
+### Linting and Formatting
+
+This project uses Husky to run pre-commit hooks via lint-staged.
+
+Check code for linting errors with ESLint:
+
+```bash
+npm run lint
+```
+
+Automatically fix linting issues:
+
+```bash
+npm run lint:fix
+```
+
+Format code using Prettier:
+
+```bash
+npm run format
+```

@@ -1,20 +1,16 @@
 import dotenv from 'dotenv';
 import { z } from 'zod';
-import { nonEmptyStringSchema, urlSchema, uuidSchema } from '../schemas/shared/common';
 
 dotenv.config();
 
 const EnvSchema = z.object({
-  PORT: nonEmptyStringSchema,
-  NODE_ENV: z.enum(
-    ['development', 'production'],
-    'NODE_ENV must be either "development" or "production"'
-  ),
-  FRONTEND_URL: urlSchema,
-  HEVY_URL: urlSchema,
-  HEVY_API_KEY: uuidSchema,
-  JWT_ACCESS_SECRET: nonEmptyStringSchema,
-  JWT_REFRESH_SECRET: nonEmptyStringSchema,
+  PORT: z.string().min(1, 'Port cannot be empty').default('3000'),
+  NODE_ENV: z
+    .enum(['development', 'production'], 'NODE_ENV must be either "development" or "production"')
+    .default('development'),
+  FRONTEND_URL: z.url('Not a valid URL').default('http://localhost:5173'),
+  JWT_ACCESS_SECRET: z.string().min(1, 'JWT_ACCESS_SECRET cannot be empty').default('345'),
+  JWT_REFRESH_SECRET: z.string().min(1, 'JWT_REFRESH_SECRET cannot be empty').default('123'),
   LOG_LEVEL: z.enum(['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly']).default('info'),
 });
 

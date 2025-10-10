@@ -11,13 +11,14 @@ import HevyClient from './service/hevy/hevyClient';
 
 import { Service } from './types/service';
 import { ResponseHelpers } from './types/express';
+import { UuidType } from './schemas/shared/common';
 
 const PORT = env.PORT;
 const NODE_ENV = env.NODE_ENV;
 const FRONTEND_URL = env.FRONTEND_URL;
 
-const HEVY_URL = env.HEVY_URL;
-const HEVY_API_KEY = env.HEVY_API_KEY;
+// NOTE: Need to change this later
+const HEVY_API_KEY = 'test' as UuidType;
 
 const app = express();
 
@@ -42,7 +43,7 @@ declare module 'express-serve-static-core' {
 
 app.use((req, _, next) => {
   req.service = {
-    hevyClient: new HevyClient(HEVY_URL, HEVY_API_KEY),
+    hevyClient: new HevyClient(HEVY_API_KEY),
   };
 
   next();
