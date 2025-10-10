@@ -1,6 +1,6 @@
-import { setCookies, clearCookies } from '../crypto/jwt.js'
-import { CreateUserSchema, LoginUserSchema } from '../schemas/shared/auth.js'
-import { cookieAuth } from '../middleware/middleware.js'
+import { setCookies, clearCookies } from '../crypto/jwt'
+import { CreateUserSchema, LoginUserSchema } from '../schemas/shared/auth'
+import { cookieAuth } from '../middleware/middleware'
 import { Router } from 'express'
 
 

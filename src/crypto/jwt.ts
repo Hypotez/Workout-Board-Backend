@@ -1,7 +1,7 @@
 import { sign, decode, verify, SignOptions, JwtPayload } from 'jsonwebtoken'
 
-import { CookieResponse } from '../schemas/shared/auth.js'
-import env from "../config/env.js"
+import { CookieResponse } from '../schemas/shared/auth'
+import env from "../config/env"
 
 const JWT_ACCESS_SECRET = env.JWT_ACCESS_SECRET
 const JWT_REFRESH_SECRET = env.JWT_REFRESH_SECRET
