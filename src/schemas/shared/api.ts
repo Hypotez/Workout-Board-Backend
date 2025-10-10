@@ -3,7 +3,9 @@ import { z } from "zod";
 export const SuccessString = "success"
 export const ErrorString = "error"
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const SuccessStatusCodeSchema = z.literal(200);
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ErrorStatusCodeSchema = z.union([z.literal(400), z.literal(401), z.literal(403), z.literal(404), z.literal(500)]);
 
 const SuccessStatusSchema = z.literal(SuccessString)

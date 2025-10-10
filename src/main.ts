@@ -34,7 +34,8 @@ declare module 'express-serve-static-core' {
     service: Service
   }
 
-  export interface Response extends ResponseHelpers{}
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  export interface Response extends ResponseHelpers {}
 }
 
 app.use((req, _, next) => {

@@ -1,3 +1,4 @@
+import { Response } from 'express';
 import { sign, decode, verify, SignOptions, JwtPayload } from 'jsonwebtoken'
 
 import { CookieResponse } from '../schemas/shared/auth'
@@ -16,7 +17,7 @@ function verifyToken(token: string, secret: string): boolean {
     try {
         verify(token, secret)
         return true
-    } catch (error) {
+    } catch {
         return false
     }
 }
@@ -41,7 +42,7 @@ export function generateTokens(id: string): CookieResponse {
     }
 }
 
-export function setCookies(res: any, cookieResponse: CookieResponse): void {
+export function setCookies(res: Response, cookieResponse: CookieResponse): void {
     res.cookie(ACCESS_TOKEN_STRING, cookieResponse.access_token, {
         httpOnly: true,
         secure: NODE_ENV === PRODUCTION_STRING,
@@ -57,7 +58,7 @@ export function setCookies(res: any, cookieResponse: CookieResponse): void {
     });
 }
 
-export function clearCookies(res: any): void {
+export function clearCookies(res: Response): void {
     res.clearCookie(ACCESS_TOKEN_STRING, {
         httpOnly: true,
         secure: NODE_ENV === PRODUCTION_STRING,
