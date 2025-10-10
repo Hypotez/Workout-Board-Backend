@@ -1,24 +1,29 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-export const SuccessString = "success"
-export const ErrorString = "error"
+export const SuccessString = 'success';
+export const ErrorString = 'error';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const SuccessStatusCodeSchema = z.literal(200);
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const ErrorStatusCodeSchema = z.union([z.literal(400), z.literal(401), z.literal(403), z.literal(404), z.literal(500)]);
+const ErrorStatusCodeSchema = z.union([
+  z.literal(400),
+  z.literal(401),
+  z.literal(403),
+  z.literal(404),
+  z.literal(500),
+]);
 
-const SuccessStatusSchema = z.literal(SuccessString)
-const ErrorStatusSchema = z.literal(ErrorString)
+const SuccessStatusSchema = z.literal(SuccessString);
+const ErrorStatusSchema = z.literal(ErrorString);
 
 const ErrorSchema = z.string().nullable();
 const DataSchema = z.unknown();
 
-export const SuccessResponseSchema =
-  z.object({
-    status: SuccessStatusSchema,
-    data: DataSchema,
-  });
+export const SuccessResponseSchema = z.object({
+  status: SuccessStatusSchema,
+  data: DataSchema,
+});
 
 export const ErrorResponseSchema = z.object({
   status: ErrorStatusSchema,
@@ -44,4 +49,4 @@ export type ErrorResponse = {
   error: ErrorType;
 };
 
-export type ApiResponse = SuccessResponse | null
+export type ApiResponse = SuccessResponse | null;

@@ -1,6 +1,6 @@
 import HttpClient from '../httpClient';
 
-import { 
+import {
   GetRoutineResponse,
   GetRoutinesResponse,
   GetRoutinesResponseSchema,
@@ -8,33 +8,32 @@ import {
   CreateRoutineResponseSchema,
   CreateRoutine,
   CreateRoutineResponse,
-  UpdateRoutine
+  UpdateRoutine,
 } from '../../schemas/hevy/routine';
 
-import {
-  UuidType
-} from '../../schemas/shared/common';
+import { UuidType } from '../../schemas/shared/common';
 
 import { IHevyRoutinesService } from '../../types/service';
 
 export default class HevyRoutinesService extends HttpClient implements IHevyRoutinesService {
-  async getRoutines(page: number, pageSize: number): Promise<GetRoutinesResponse| null> {
-    const response = await this.fetchWithAuth(`/v1/routines?page=${page}&pageSize=${pageSize}`, { method: "GET" });
+  async getRoutines(page: number, pageSize: number): Promise<GetRoutinesResponse | null> {
+    const response = await this.fetchWithAuth(`/v1/routines?page=${page}&pageSize=${pageSize}`, {
+      method: 'GET',
+    });
 
     if (response) {
+      const routinesResponse = GetRoutinesResponseSchema.safeParse(response.data);
 
-        const routinesResponse = GetRoutinesResponseSchema.safeParse(response.data)
-
-        if (routinesResponse.success) {
-            return routinesResponse.data
-        }
+      if (routinesResponse.success) {
+        return routinesResponse.data;
+      }
     }
 
-    return null
+    return null;
   }
 
   async getRoutineById(routineId: UuidType): Promise<GetRoutineResponse | null> {
-    const response = await this.fetchWithAuth(`/v1/routines/${routineId}`, { method: "GET" });
+    const response = await this.fetchWithAuth(`/v1/routines/${routineId}`, { method: 'GET' });
 
     if (response) {
       const routineResponse = GetRoutineResponseSchema.safeParse(response.data);
@@ -47,8 +46,11 @@ export default class HevyRoutinesService extends HttpClient implements IHevyRout
     return null;
   }
 
-  async createRoutine(routinePayload: CreateRoutine): Promise<CreateRoutineResponse | null>  {
-    const response = await this.fetchWithAuth(`/v1/routines`, { method: "POST", body: JSON.stringify(routinePayload) });
+  async createRoutine(routinePayload: CreateRoutine): Promise<CreateRoutineResponse | null> {
+    const response = await this.fetchWithAuth(`/v1/routines`, {
+      method: 'POST',
+      body: JSON.stringify(routinePayload),
+    });
 
     if (response) {
       const routineResponse = CreateRoutineResponseSchema.safeParse(response.data);
@@ -61,8 +63,14 @@ export default class HevyRoutinesService extends HttpClient implements IHevyRout
     return null;
   }
 
-  async updateRoutine(routineId: UuidType, routinePayload: UpdateRoutine): Promise<CreateRoutineResponse | null> {
-    const response = await this.fetchWithAuth(`/v1/routines/${routineId}`, { method: "PUT", body: JSON.stringify(routinePayload) });
+  async updateRoutine(
+    routineId: UuidType,
+    routinePayload: UpdateRoutine
+  ): Promise<CreateRoutineResponse | null> {
+    const response = await this.fetchWithAuth(`/v1/routines/${routineId}`, {
+      method: 'PUT',
+      body: JSON.stringify(routinePayload),
+    });
 
     if (response) {
       const routineResponse = CreateRoutineResponseSchema.safeParse(response.data);

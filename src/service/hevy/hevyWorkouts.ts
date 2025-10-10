@@ -1,15 +1,15 @@
 import HttpClient from '../httpClient';
 
-import { 
+import {
   GetWorkoutsCounts,
   GetWorkoutsCountsSchema,
-  CreateOrUpdateWorkoutResponseSchema, 
+  CreateOrUpdateWorkoutResponseSchema,
   CreateOrUpdateWorkout,
   GetPaginatedWorkouts,
   GetWorkout,
   GetWorkoutSchema,
   GetPaginatedWorkoutsResponseSchema,
-  GetAllWorkouts
+  GetAllWorkouts,
 } from '../../schemas/hevy/workout';
 
 import { IHevyWorkoutsService } from '../../types/service';
@@ -19,17 +19,19 @@ import { GetEvents, EventsSchema } from '../../schemas/hevy/event';
 
 export default class HevyWorkoutService extends HttpClient implements IHevyWorkoutsService {
   async getWorkouts(page: number, pageSize: number): Promise<GetPaginatedWorkouts | null> {
-    const response = await this.fetchWithAuth(`/v1/workouts?page=${page}&pageSize=${pageSize}`, { method: "GET" });
+    const response = await this.fetchWithAuth(`/v1/workouts?page=${page}&pageSize=${pageSize}`, {
+      method: 'GET',
+    });
 
     if (response) {
-      const workoutResponse = GetPaginatedWorkoutsResponseSchema.safeParse(response.data)
+      const workoutResponse = GetPaginatedWorkoutsResponseSchema.safeParse(response.data);
 
       if (workoutResponse.success) {
-        return workoutResponse.data
+        return workoutResponse.data;
       }
     }
 
-    return null
+    return null;
   }
 
   async getAllWorkouts(pageSize: number): Promise<GetAllWorkouts | null> {
@@ -50,7 +52,7 @@ export default class HevyWorkoutService extends HttpClient implements IHevyWorko
   }
 
   async getWorkoutsCount(): Promise<GetWorkoutsCounts | null> {
-    const response = await this.fetchWithAuth(`/v1/workouts/count`, { method: "GET" });
+    const response = await this.fetchWithAuth(`/v1/workouts/count`, { method: 'GET' });
 
     if (response) {
       const workoutCountsResponse = GetWorkoutsCountsSchema.safeParse(response.data);
@@ -64,7 +66,7 @@ export default class HevyWorkoutService extends HttpClient implements IHevyWorko
   }
 
   async getSingleWorkoutById(workoutId: UuidType): Promise<GetWorkout | null> {
-    const response = await this.fetchWithAuth(`/v1/workouts/${workoutId}`, { method: "GET" });
+    const response = await this.fetchWithAuth(`/v1/workouts/${workoutId}`, { method: 'GET' });
 
     if (response) {
       const workoutResponse = GetWorkoutSchema.safeParse(response.data);
@@ -78,7 +80,10 @@ export default class HevyWorkoutService extends HttpClient implements IHevyWorko
   }
 
   async createWorkout(workoutPayload: CreateOrUpdateWorkout): Promise<GetWorkout | null> {
-    const response = await this.fetchWithAuth(`/v1/workouts`, { method: "POST", body: JSON.stringify(workoutPayload) });
+    const response = await this.fetchWithAuth(`/v1/workouts`, {
+      method: 'POST',
+      body: JSON.stringify(workoutPayload),
+    });
 
     if (response) {
       const workoutResponse = CreateOrUpdateWorkoutResponseSchema.safeParse(response.data);
@@ -91,8 +96,14 @@ export default class HevyWorkoutService extends HttpClient implements IHevyWorko
     return null;
   }
 
-  async updateWorkout(workoutId: UuidType, workoutPayload: CreateOrUpdateWorkout): Promise<GetWorkout | null> {
-    const response = await this.fetchWithAuth(`/v1/workouts/${workoutId}`, { method: "PUT", body: JSON.stringify(workoutPayload) });
+  async updateWorkout(
+    workoutId: UuidType,
+    workoutPayload: CreateOrUpdateWorkout
+  ): Promise<GetWorkout | null> {
+    const response = await this.fetchWithAuth(`/v1/workouts/${workoutId}`, {
+      method: 'PUT',
+      body: JSON.stringify(workoutPayload),
+    });
 
     if (response) {
       const workoutResponse = CreateOrUpdateWorkoutResponseSchema.safeParse(response.data);
@@ -106,7 +117,10 @@ export default class HevyWorkoutService extends HttpClient implements IHevyWorko
   }
 
   async getWorkoutEvents(pageSize: number, page: number, since: Date): Promise<GetEvents | null> {
-    const response = await this.fetchWithAuth(`/v1/workouts/events?pageSize=${pageSize}&page=${page}&since=${since}`, { method: "GET" });
+    const response = await this.fetchWithAuth(
+      `/v1/workouts/events?pageSize=${pageSize}&page=${page}&since=${since}`,
+      { method: 'GET' }
+    );
 
     if (response) {
       const eventsResponse = EventsSchema.safeParse(response.data);

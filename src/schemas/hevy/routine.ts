@@ -1,6 +1,6 @@
-import { z } from "zod";
-import { uuidSchema, dateSchema } from "../shared/common";
-import { GetRoutineExercisesSchema, CreateRoutineExercisesSchema } from "./exercise";
+import { z } from 'zod';
+import { uuidSchema, dateSchema } from '../shared/common';
+import { GetRoutineExercisesSchema, CreateRoutineExercisesSchema } from './exercise';
 
 const GetRoutineSchema = z.object({
   id: uuidSchema,
@@ -8,30 +8,37 @@ const GetRoutineSchema = z.object({
   folder_id: z.number().nullable(),
   updated_at: dateSchema,
   created_at: dateSchema,
-  exercises: GetRoutineExercisesSchema
+  exercises: GetRoutineExercisesSchema,
 });
 
 const GetRoutinesSchema = z.array(GetRoutineSchema);
 
 export const CreateRoutineSchema = z.object({
-  routine: GetRoutineSchema.omit({ id: true, created_at: true, updated_at: true }).extend({exercises: CreateRoutineExercisesSchema})
+  routine: GetRoutineSchema.omit({ id: true, created_at: true, updated_at: true }).extend({
+    exercises: CreateRoutineExercisesSchema,
+  }),
 });
 
 export const UpdateRoutineSchema = z.object({
-  routine: GetRoutineSchema.omit({ id: true, created_at: true, updated_at: true, folder_id: true }).extend({exercises: CreateRoutineExercisesSchema})
+  routine: GetRoutineSchema.omit({
+    id: true,
+    created_at: true,
+    updated_at: true,
+    folder_id: true,
+  }).extend({ exercises: CreateRoutineExercisesSchema }),
 });
 export const GetRoutineResponseSchema = z.object({
-  routine: GetRoutineSchema
-})
+  routine: GetRoutineSchema,
+});
 
 export const CreateRoutineResponseSchema = z.object({
-  routine: GetRoutinesSchema
-})
+  routine: GetRoutinesSchema,
+});
 
 export const GetRoutinesResponseSchema = z.object({
   page: z.number(),
   page_count: z.number(),
-  routines: GetRoutinesSchema
+  routines: GetRoutinesSchema,
 });
 
 export type GetRoutinesResponse = z.infer<typeof GetRoutinesResponseSchema>;

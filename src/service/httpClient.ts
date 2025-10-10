@@ -1,4 +1,4 @@
-import logger from '../logger/logger'
+import logger from '../logger/logger';
 import { ApiResponse, SuccessResponse, SuccessString } from '../schemas/shared/api';
 import { UrlType, UuidType } from '../schemas/shared/common';
 
@@ -15,9 +15,9 @@ export default class HttpClient {
     const fullPath = this.baseUrl + endpoint;
     const headers = {
       ...options?.headers,
-      'accept': 'application/json',
+      accept: 'application/json',
       'content-type': 'application/json',
-      ...(this.apiKey && { 'api-key': this.apiKey })
+      ...(this.apiKey && { 'api-key': this.apiKey }),
     };
 
     const response = await fetch(fullPath, { ...options, headers });
@@ -27,30 +27,31 @@ export default class HttpClient {
       const contentType = response.headers.get('Content-Type');
 
       if (contentType?.includes('application/json')) {
-        finalResponse = await response.json()
+        finalResponse = await response.json();
       } else if (contentType?.includes('text/plain')) {
-        finalResponse = await response.text()
+        finalResponse = await response.text();
       }
-
     } catch (error) {
-      logger.error('[HttpClient][FetchWithAuth][Content-Type]', error)
+      logger.error('[HttpClient][FetchWithAuth][Content-Type]', error);
     }
 
     if (response.ok) {
       const returnResponse: SuccessResponse = {
         status: SuccessString,
-        data: null
-      }
+        data: null,
+      };
 
       if (finalResponse) {
-        returnResponse.data = finalResponse
+        returnResponse.data = finalResponse;
       }
 
-      return returnResponse
+      return returnResponse;
     }
 
-    logger.error(`[HttpClient][FetchWithAuth][Response] Status: ${response.status} , Text: ${response.statusText} `)
+    logger.error(
+      `[HttpClient][FetchWithAuth][Response] Status: ${response.status} , Text: ${response.statusText} `
+    );
 
-    return null
+    return null;
   }
 }

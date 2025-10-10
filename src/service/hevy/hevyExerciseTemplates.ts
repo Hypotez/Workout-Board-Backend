@@ -1,34 +1,47 @@
 import HttpClient from '../httpClient';
 
 import { IHevyExerciseTemplatesService } from '../../types/service';
-import { GetExerciseTemplate, GetExerciseTemplates, GetExerciseTemplateSchema, GetExerciseTemplatesSchema } from '../../schemas/hevy/exerciseTemplates';
+import {
+  GetExerciseTemplate,
+  GetExerciseTemplates,
+  GetExerciseTemplateSchema,
+  GetExerciseTemplatesSchema,
+} from '../../schemas/hevy/exerciseTemplates';
 
-export default class HevyExerciseTemplatesService extends HttpClient implements IHevyExerciseTemplatesService {
+export default class HevyExerciseTemplatesService
+  extends HttpClient
+  implements IHevyExerciseTemplatesService
+{
   async getExerciseTemplates(page: number, pageSize: number): Promise<GetExerciseTemplates | null> {
-    const response = await this.fetchWithAuth(`/v1/exercise_templates?page=${page}&pageSize=${pageSize}`, { method: "GET" });
+    const response = await this.fetchWithAuth(
+      `/v1/exercise_templates?page=${page}&pageSize=${pageSize}`,
+      { method: 'GET' }
+    );
 
     if (response) {
-        const templatesResponse = GetExerciseTemplatesSchema.safeParse(response.data)
+      const templatesResponse = GetExerciseTemplatesSchema.safeParse(response.data);
 
-        if (templatesResponse.success) {
-            return templatesResponse.data
-        }
+      if (templatesResponse.success) {
+        return templatesResponse.data;
+      }
     }
 
-    return null
+    return null;
   }
 
-    async getExerciseTemplateById(templateId: string): Promise<GetExerciseTemplate | null> {
-      const response = await this.fetchWithAuth(`/v1/exercise_templates/${templateId}`, { method: "GET" });
+  async getExerciseTemplateById(templateId: string): Promise<GetExerciseTemplate | null> {
+    const response = await this.fetchWithAuth(`/v1/exercise_templates/${templateId}`, {
+      method: 'GET',
+    });
 
-      if (response) {
-          const templateResponse = GetExerciseTemplateSchema.safeParse(response.data)
+    if (response) {
+      const templateResponse = GetExerciseTemplateSchema.safeParse(response.data);
 
-          if (templateResponse.success) {
-              return templateResponse.data
-          }
+      if (templateResponse.success) {
+        return templateResponse.data;
       }
+    }
 
-      return null
+    return null;
   }
 }

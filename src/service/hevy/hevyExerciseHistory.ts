@@ -3,8 +3,15 @@ import HttpClient from '../httpClient';
 import { IHevyExerciseHistoryService } from '../../types/service';
 import { GetExercisesHistory, GetExercisesHistorySchema } from '../../schemas/hevy/exerciseHistory';
 
-export default class HevyExerciseHistoryService extends HttpClient implements IHevyExerciseHistoryService {
-  async getExerciseHistory(templateId: string, start_date?: Date, end_date?: Date): Promise<GetExercisesHistory | null> {
+export default class HevyExerciseHistoryService
+  extends HttpClient
+  implements IHevyExerciseHistoryService
+{
+  async getExerciseHistory(
+    templateId: string,
+    start_date?: Date,
+    end_date?: Date
+  ): Promise<GetExercisesHistory | null> {
     let url = `/v1/exercise_history/${templateId}`;
 
     const params: string[] = [];
@@ -21,14 +28,14 @@ export default class HevyExerciseHistoryService extends HttpClient implements IH
       url += `?${params.join('&')}`;
     }
 
-    const response = await this.fetchWithAuth(url, { method: "GET" });
+    const response = await this.fetchWithAuth(url, { method: 'GET' });
 
     if (response) {
-        const templatesResponse = GetExercisesHistorySchema.safeParse(response.data)
+      const templatesResponse = GetExercisesHistorySchema.safeParse(response.data);
 
-        if (templatesResponse.success) {
-            return templatesResponse.data
-        }
+      if (templatesResponse.success) {
+        return templatesResponse.data;
+      }
     }
 
     return null;

@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 const SetSchema = z.object({
   index: z.number(),
@@ -8,7 +8,7 @@ const SetSchema = z.object({
   distance_meters: z.number().nullable(),
   duration_seconds: z.number().nullable(),
   rpe: z.number().nullable(),
-  custom_metric: z.number().nullable()
+  custom_metric: z.number().nullable(),
 });
 
 const CreateWorkoutSetSchema = SetSchema.omit({ index: true });

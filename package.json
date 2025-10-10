@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "npx ts-node-dev --respawn src/main.ts",
     "build": "tsc",
+    "lint": "eslint src --ext .ts,.js --fix",
+    "format": "prettier --write \"src/**/*.{ts,js,json}\"",
     "app": "tsc && node ./dist/main.js"
   },
   "keywords": [],
@@ -28,9 +30,12 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.2.1",
     "eslint": "^9.37.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
     "globals": "^16.4.0",
     "jiti": "^2.6.1",
     "nodemon": "^3.1.10",
+    "prettier": "^3.6.2",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.46.0"
   }
