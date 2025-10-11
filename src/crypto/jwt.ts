@@ -27,18 +27,18 @@ function signToken(id: string, secret: string, expiresIn: number): string {
 }
 
 export function generateTokens(id: string): CookieResponse {
-  const timeNow = Date.now();
-  const accessTokenExpiration = timeNow + 15 * 60 * 1000;
-  const refreshTokenExpiration = timeNow + 7 * 24 * 60 * 60 * 1000;
+  const accessTokenExpirationSeconds = 15 * 60;
+  const refreshTokenExpirationSeconds = 24 * 60 * 60;
 
-  const accessToken = signToken(id, JWT_ACCESS_SECRET, accessTokenExpiration);
-  const refreshToken = signToken(id, JWT_REFRESH_SECRET, refreshTokenExpiration);
+  const accessToken = signToken(id, JWT_ACCESS_SECRET, accessTokenExpirationSeconds);
+  const refreshToken = signToken(id, JWT_REFRESH_SECRET, refreshTokenExpirationSeconds);
 
+  const timeNow = Math.floor(Date.now() / 1000);
   return {
     access_token: accessToken,
     refresh_token: refreshToken,
-    access_token_expiration: accessTokenExpiration,
-    refresh_token_expiration: refreshTokenExpiration,
+    access_token_expiration: timeNow + accessTokenExpirationSeconds,
+    refresh_token_expiration: timeNow + refreshTokenExpirationSeconds,
   };
 }
 
@@ -47,14 +47,14 @@ export function setCookies(res: Response, cookieResponse: CookieResponse): void 
     httpOnly: true,
     secure: NODE_ENV === PRODUCTION_STRING,
     sameSite: SAME_SITE_STRING,
-    expires: new Date(cookieResponse.access_token_expiration),
+    expires: new Date(cookieResponse.access_token_expiration * 1000),
   });
 
   res.cookie(REFRESH_TOKEN_STRING, cookieResponse.refresh_token, {
     httpOnly: true,
     secure: NODE_ENV === PRODUCTION_STRING,
     sameSite: SAME_SITE_STRING,
-    expires: new Date(cookieResponse.refresh_token_expiration),
+    expires: new Date(cookieResponse.refresh_token_expiration * 1000),
   });
 }
 
