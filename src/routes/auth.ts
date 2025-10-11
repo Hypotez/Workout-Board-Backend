@@ -1,7 +1,8 @@
-import { clearCookies } from '../crypto/jwt';
+import { clearCookies, setCookies } from '../crypto/jwt';
 import { CreateUserSchema, LoginUserSchema } from '../schemas/shared/auth';
 import { cookieAuth } from '../middleware/middleware';
 import { Router } from 'express';
+import logger from '../logger/logger';
 
 const router = Router();
 
@@ -9,20 +10,22 @@ router.post('/register', async (req, res): Promise<void> => {
   const user = CreateUserSchema.safeParse(req.body);
 
   if (!user.success) {
-    res.error('Invalid data');
-    return;
+    logger.error('[/register] Invalid user data');
+    return res.error();
   }
 
-  /*
-    TODO: Enable user registration
-    const cookie = await req.service.db.createUser({ username: user.data.username, password: user.data.password, email: user.data.email })
-    if (cookie) {
-        await setCookies(res, cookie)
-        res.success()
-        return
-    }
-    */
-  res.error('Could not create user', 400);
+  const cookie = await req.service.db.createUser({
+    username: user.data.username,
+    password: user.data.password,
+    email: user.data.email,
+  });
+  if (cookie) {
+    await setCookies(res, cookie);
+    return res.success();
+  }
+
+  logger.error('[/register] Could not create user');
+  res.error();
 });
 
 router.post('/login', async (req, res): Promise<void> => {

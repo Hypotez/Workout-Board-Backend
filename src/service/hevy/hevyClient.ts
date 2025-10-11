@@ -3,7 +3,7 @@ import HevyRoutinesService from './hevyRoutines';
 import HevyExerciseTemplatesService from './hevyExerciseTemplates';
 import HevyExerciseHistoryService from './hevyExerciseHistory';
 
-import { UrlType, UuidType } from '../../schemas/shared/common';
+import { UrlType } from '../../schemas/shared/common';
 
 export default class HevyClient {
   public workouts: HevyWorkoutService;
@@ -11,12 +11,12 @@ export default class HevyClient {
   public exerciseTemplates: HevyExerciseTemplatesService;
   public exerciseHistory: HevyExerciseHistoryService;
 
-  constructor(apiKey: UuidType) {
+  constructor() {
     const baseUrl: UrlType = 'https://api.hevyapp.com/v1/' as UrlType;
 
-    this.workouts = new HevyWorkoutService(baseUrl, apiKey);
-    this.routines = new HevyRoutinesService(baseUrl, apiKey);
-    this.exerciseTemplates = new HevyExerciseTemplatesService(baseUrl, apiKey);
-    this.exerciseHistory = new HevyExerciseHistoryService(baseUrl, apiKey);
+    this.workouts = new HevyWorkoutService(baseUrl);
+    this.routines = new HevyRoutinesService(baseUrl);
+    this.exerciseTemplates = new HevyExerciseTemplatesService(baseUrl);
+    this.exerciseHistory = new HevyExerciseHistoryService(baseUrl);
   }
 }

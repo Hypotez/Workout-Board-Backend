@@ -8,29 +8,14 @@ import logger from './logger/logger';
 import user from './routes/user';
 import auth from './routes/auth';
 import HevyClient from './service/hevy/hevyClient';
+import DatabaseService from './service/db';
 
 import { Service } from './types/service';
 import { ResponseHelpers } from './types/express';
-import { UuidType } from './schemas/shared/common';
 
 const PORT = env.PORT;
 const NODE_ENV = env.NODE_ENV;
 const FRONTEND_URL = env.FRONTEND_URL;
-
-// NOTE: Need to change this later
-const HEVY_API_KEY = 'test' as UuidType;
-
-const app = express();
-
-app.use(express.urlencoded({ extended: true, limit: '1mb' }));
-app.use(express.json({ limit: '1mb' }));
-app.use(
-  cors({
-    origin: FRONTEND_URL,
-    credentials: true,
-  })
-);
-app.use(apiResponseMiddleware);
 
 declare module 'express-serve-static-core' {
   export interface Request {
@@ -41,17 +26,38 @@ declare module 'express-serve-static-core' {
   export interface Response extends ResponseHelpers {}
 }
 
-app.use((req, _, next) => {
-  req.service = {
-    hevyClient: new HevyClient(HEVY_API_KEY),
-  };
+async function startServer() {
+  const DB = new DatabaseService();
 
-  next();
-});
+  await DB.initialize();
 
-app.use('/api/v1/auth', auth);
-app.use('/api/v1/user', cookieAuth, user);
+  const app = express();
 
-app.listen(PORT, () => {
-  logger.info(`Server is running on http://localhost:${PORT} NODE_ENV=${NODE_ENV}`);
-});
+  app.use(express.urlencoded({ extended: true, limit: '1mb' }));
+  app.use(express.json({ limit: '1mb' }));
+  app.use(
+    cors({
+      origin: FRONTEND_URL,
+      credentials: true,
+    })
+  );
+  app.use(apiResponseMiddleware);
+
+  app.use((req, _, next) => {
+    req.service = {
+      hevyClient: new HevyClient(),
+      db: DB,
+    };
+
+    next();
+  });
+
+  app.use('/api/v1/auth', auth);
+  app.use('/api/v1/user', cookieAuth, user);
+
+  app.listen(PORT, () => {
+    logger.info(`Server is running on http://localhost:${PORT} NODE_ENV=${NODE_ENV}`);
+  });
+}
+
+startServer();

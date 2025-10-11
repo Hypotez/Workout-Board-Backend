@@ -19,6 +19,7 @@ import HevyWorkoutService from '../service/hevy/hevyWorkouts';
 import HevyRoutinesService from '../service/hevy/hevyRoutines';
 import { GetExerciseTemplate, GetExerciseTemplates } from '../schemas/hevy/exerciseTemplates';
 import { GetExercisesHistory } from '../schemas/hevy/exerciseHistory';
+import { CookieResponse } from '../schemas/shared/auth';
 
 export interface IHevyWorkoutsService {
   /**
@@ -133,8 +134,23 @@ export interface IHevyExerciseHistoryService {
   ): Promise<GetExercisesHistory | null>;
 }
 
-export interface Service {
-  hevyClient: HevyClientService;
+export interface IDatabaseService {
+  /**
+   * Initialize the database connection and create necessary tables.
+   */
+  initialize(): Promise<void>;
+  /**
+   * Create a new user in the database.
+   * @param username The username of the new user.
+   * @param password The password of the new user.
+   * @param email The email of the new user.
+   * @returns A session cookie if successful, null otherwise.
+   */
+  createUser(user: {
+    username: string;
+    password: string;
+    email: string;
+  }): Promise<CookieResponse | null>;
 }
 
 export interface HevyClientService {
@@ -142,4 +158,9 @@ export interface HevyClientService {
   routines: HevyRoutinesService;
   exerciseTemplates: IHevyExerciseTemplatesService;
   exerciseHistory: IHevyExerciseHistoryService;
+}
+
+export interface Service {
+  hevyClient: HevyClientService;
+  db: IDatabaseService;
 }
