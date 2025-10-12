@@ -1,6 +1,6 @@
 import { Pool } from 'pg';
-import { CookieResponse, CreateUserInput } from '../schemas/shared/auth';
-import { hashPassword } from '../crypto/hash';
+import { CookieResponse, CreateUserInput, LoginUserInput } from '../schemas/shared/auth';
+import { hashPassword, comparePassword } from '../crypto/hash';
 import logger from '../logger/logger';
 import { generateTokens } from '../crypto/jwt';
 
@@ -88,6 +88,38 @@ export default class DatabaseService {
       return await generateTokens(result.rows[0].id);
     } catch (error) {
       logger.error('[DB] [createUser] Error creating user:', error);
+      return null;
+    } finally {
+      client.release();
+    }
+  }
+
+  async login(userData: LoginUserInput): Promise<CookieResponse | null> {
+    const client = await this.pool.connect();
+
+    try {
+      const identifier = userData.type === 'username' ? userData.username : userData.email;
+
+      const result = await client.query(
+        'SELECT id, password_hash FROM users WHERE username = $1 OR email = $1',
+        [identifier]
+      );
+
+      if (result.rows.length === 0) {
+        return null;
+      }
+
+      const user = result.rows[0];
+
+      const isPasswordValid = await comparePassword(userData.password, user.password_hash);
+
+      if (!isPasswordValid) {
+        return null;
+      }
+
+      return generateTokens(user.id);
+    } catch (error) {
+      logger.error('[DB] [login] Error logging in user:', error);
       return null;
     } finally {
       client.release();

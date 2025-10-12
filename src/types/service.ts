@@ -19,7 +19,7 @@ import HevyWorkoutService from '../service/hevy/hevyWorkouts';
 import HevyRoutinesService from '../service/hevy/hevyRoutines';
 import { GetExerciseTemplate, GetExerciseTemplates } from '../schemas/hevy/exerciseTemplates';
 import { GetExercisesHistory } from '../schemas/hevy/exerciseHistory';
-import { CookieResponse } from '../schemas/shared/auth';
+import { CookieResponse, LoginUserInput } from '../schemas/shared/auth';
 
 export interface IHevyWorkoutsService {
   /**
@@ -151,6 +151,12 @@ export interface IDatabaseService {
     password: string;
     email: string;
   }): Promise<CookieResponse | null>;
+  /**
+   * Log in a user with the provided credentials.
+   * @param userData The login credentials (username/email and password).
+   * @returns A session cookie if successful, null otherwise.
+   */
+  login(userData: LoginUserInput): Promise<CookieResponse | null>;
 }
 
 export interface HevyClientService {

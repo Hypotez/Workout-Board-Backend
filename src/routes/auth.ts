@@ -32,21 +32,17 @@ router.post('/login', async (req, res): Promise<void> => {
   const login = LoginUserSchema.safeParse(req.body);
 
   if (!login.success) {
-    res.error('Invalid data');
-    return;
+    logger.error('[/login] Invalid user data');
+    return res.error();
   }
 
-  /*
-    TODO: Enable user login
-    const cookie = await req.service.db.login(login.data)
-    if (cookie) {
-        await setCookies(res, cookie)
-        res.success()
-        return
-    }
-    */
+  const cookie = await req.service.db.login(login.data);
+  if (cookie) {
+    await setCookies(res, cookie);
+    return res.success();
+  }
 
-  res.error('Invalid username, email or password', 401);
+  return res.error(null, 401);
 });
 
 router.post('/logout', async (_, res): Promise<void> => {

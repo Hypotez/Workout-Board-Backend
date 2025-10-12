@@ -36,3 +36,4 @@ export const LoginUserSchema = z.discriminatedUnion('type', [
 
 export type CreateUserInput = z.infer<typeof CreateUserSchema>;
 export type CookieResponse = z.infer<typeof CookieResponseSchema>;
+export type LoginUserInput = z.infer<typeof LoginUserSchema>;
