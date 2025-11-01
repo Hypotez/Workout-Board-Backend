@@ -39,9 +39,11 @@ router.post('/login', async (req, res): Promise<void> => {
   const cookie = await req.service.db.login(login.data);
   if (cookie) {
     await setCookies(res, cookie);
+    logger.info('[/login] User logged in successfully');
     return res.success();
   }
 
+  logger.error('[/login] Invalid credentials');
   return res.error(null, 401);
 });
 

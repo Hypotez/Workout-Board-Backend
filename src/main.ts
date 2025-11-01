@@ -9,6 +9,7 @@ import user from './routes/user';
 import auth from './routes/auth';
 import HevyClient from './service/hevy/hevyClient';
 import DatabaseService from './service/db';
+import cookieParser from 'cookie-parser';
 
 import { Service } from './types/service';
 import { ResponseHelpers } from './types/express';
@@ -42,6 +43,7 @@ async function startServer() {
     })
   );
   app.use(apiResponseMiddleware);
+  app.use(cookieParser());
 
   app.use((req, _, next) => {
     req.service = {

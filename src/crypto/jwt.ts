@@ -11,7 +11,7 @@ const NODE_ENV = env.NODE_ENV;
 const PRODUCTION_STRING = 'production';
 const ACCESS_TOKEN_STRING = 'access_token';
 const REFRESH_TOKEN_STRING = 'refresh_token';
-const SAME_SITE_STRING = 'strict';
+const SAME_SITE_STRING = NODE_ENV === PRODUCTION_STRING ? 'strict' : 'lax';
 
 function verifyToken(token: string, secret: string): boolean {
   try {

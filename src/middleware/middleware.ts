@@ -23,8 +23,8 @@ function invalidAuth(res: Response) {
 }
 
 export async function cookieAuth(req: Request, res: Response, next: NextFunction) {
-  const accessToken = req.cookies.access_token;
-  const refreshToken = req.cookies.refresh_token;
+  const accessToken = req.cookies?.access_token;
+  const refreshToken = req.cookies?.refresh_token;
 
   if (!accessToken) {
     if (!refreshToken) {
