@@ -54,6 +54,26 @@ export async function cookieAuth(req: Request, res: Response, next: NextFunction
   next();
 }
 
+export function attachUserId(req: Request, res: Response, next: NextFunction) {
+  const accessToken = req.cookies?.access_token;
+  const refreshToken = req.cookies?.refresh_token;
+
+  if (refreshToken) {
+    const payload = getPayload(refreshToken);
+    req.userId = payload?.id ?? null;
+    return next();
+  }
+
+  if (accessToken) {
+    const payload = getPayload(accessToken);
+    req.userId = payload?.id ?? null;
+    return next();
+  }
+
+  req.userId = null;
+  next();
+}
+
 export function apiResponseMiddleware(req: Request, res: Response, next: NextFunction) {
   res.success = function <T>(data: T, statusCode: SuccessStatusCode = 200) {
     return res.status(statusCode).json({ status: SuccessString, data: data } as SuccessResponse<T>);

@@ -21,6 +21,7 @@ const FRONTEND_URL = env.FRONTEND_URL;
 declare module 'express-serve-static-core' {
   export interface Request {
     service: Service;
+    userId: string | null;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
@@ -50,6 +51,8 @@ async function startServer() {
       hevyClient: new HevyClient(),
       db: DB,
     };
+
+    req.userId = null;
 
     next();
   });

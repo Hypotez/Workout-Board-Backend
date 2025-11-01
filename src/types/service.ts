@@ -20,6 +20,7 @@ import HevyRoutinesService from '../service/hevy/hevyRoutines';
 import { GetExerciseTemplate, GetExerciseTemplates } from '../schemas/hevy/exerciseTemplates';
 import { GetExercisesHistory } from '../schemas/hevy/exerciseHistory';
 import { CookieResponse, LoginUserInput } from '../schemas/shared/auth';
+import { PublicUser } from '../schemas/shared/user';
 
 export interface IHevyWorkoutsService {
   /**
@@ -157,6 +158,12 @@ export interface IDatabaseService {
    * @returns A session cookie if successful, null otherwise.
    */
   login(userData: LoginUserInput): Promise<CookieResponse | null>;
+  /**
+   * Get a user by their ID, without sensitive information.
+   * @param userId The ID of the user to retrieve.
+   * @returns The user object if found, null otherwise.
+   */
+  getUserById(userId: string): Promise<PublicUser | null>;
 }
 
 export interface HevyClientService {

@@ -1,18 +1,9 @@
 import { Pool } from 'pg';
 import { CookieResponse, CreateUserInput, LoginUserInput } from '../schemas/shared/auth';
+import { PublicUser, PublicUserSchema } from '../schemas/shared/user';
 import { hashPassword, comparePassword } from '../crypto/hash';
 import logger from '../logger/logger';
 import { generateTokens } from '../crypto/jwt';
-
-export interface User {
-  id: string;
-  username: string;
-  email: string;
-  password_hash: string;
-  hevy_api_key_encrypted?: string;
-  created_at: Date;
-  updated_at: Date;
-}
 
 export default class DatabaseService {
   private pool: Pool;
@@ -120,6 +111,35 @@ export default class DatabaseService {
       return generateTokens(user.id);
     } catch (error) {
       logger.error('[DB] [login] Error logging in user:', error);
+      return null;
+    } finally {
+      client.release();
+    }
+  }
+
+  async getUserById(userId: string): Promise<PublicUser | null> {
+    const client = await this.pool.connect();
+
+    try {
+      const result = await client.query(
+        'SELECT id, username, email, created_at, updated_at FROM users WHERE id = $1',
+        [userId]
+      );
+
+      if (result.rows.length === 0) {
+        return null;
+      }
+
+      const schemaParse = PublicUserSchema.safeParse(result.rows[0]);
+
+      if (!schemaParse.success) {
+        logger.error('[DB] [getUserById] Failed to parse user data from DB');
+        return null;
+      }
+
+      return schemaParse.data;
+    } catch (error) {
+      logger.error(`[DB] [getUserById] Error fetching user by ID. Id: ${userId}. Error: ${error}`);
       return null;
     } finally {
       client.release();
