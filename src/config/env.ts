@@ -11,6 +11,10 @@ const EnvSchema = z.object({
   FRONTEND_URL: z.url('Not a valid URL').default('http://localhost:5173'),
   JWT_ACCESS_SECRET: z.string().min(1, 'JWT_ACCESS_SECRET cannot be empty').default('345'),
   JWT_REFRESH_SECRET: z.string().min(1, 'JWT_REFRESH_SECRET cannot be empty').default('123'),
+  ENCRYPTION_KEY: z
+    .string()
+    .min(32, 'ENCRYPTION_KEY must be at least 32 characters long')
+    .default('xfn9P8L9rIpKtWaa68IZ3G865WfdYXNY'),
   LOG_LEVEL: z.enum(['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly']).default('info'),
 });
 

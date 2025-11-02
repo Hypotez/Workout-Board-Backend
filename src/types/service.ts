@@ -21,6 +21,7 @@ import { GetExerciseTemplate, GetExerciseTemplates } from '../schemas/hevy/exerc
 import { GetExercisesHistory } from '../schemas/hevy/exerciseHistory';
 import { CookieResponse, LoginUserInput } from '../schemas/shared/auth';
 import { PublicUser } from '../schemas/shared/user';
+import { SaveSettings } from '../schemas/shared/settings';
 
 export interface IHevyWorkoutsService {
   /**
@@ -164,6 +165,13 @@ export interface IDatabaseService {
    * @returns The user object if found, null otherwise.
    */
   getUserById(userId: string): Promise<PublicUser | null>;
+  /**
+   * Save user settings to the database.
+   * @param userId The ID of the user whose settings are to be saved.
+   * @param settings The settings to be saved.
+   * @returns True if successful, false otherwise.
+   */
+  saveUserSettings(userId: string, settings: SaveSettings): Promise<boolean>;
 }
 
 export interface HevyClientService {

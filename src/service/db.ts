@@ -1,7 +1,9 @@
 import { Pool } from 'pg';
 import { CookieResponse, CreateUserInput, LoginUserInput } from '../schemas/shared/auth';
 import { PublicUser, PublicUserSchema } from '../schemas/shared/user';
+import { SaveSettings } from '../schemas/shared/settings';
 import { hashPassword, comparePassword } from '../crypto/hash';
+import { encrypt } from '../crypto/encryption';
 import logger from '../logger/logger';
 import { generateTokens } from '../crypto/jwt';
 
@@ -168,6 +170,34 @@ export default class DatabaseService {
     } catch (error) {
       logger.error(`[DB] [getUserById] Error fetching user by ID. Id: ${userId}. Error: ${error}`);
       return null;
+    } finally {
+      client.release();
+    }
+  }
+  async saveUserSettings(userId: string, settings: SaveSettings): Promise<boolean> {
+    const client = await this.pool.connect();
+
+    if (settings.hevy_api_key_encrypted) {
+      settings.hevy_api_key_encrypted = encrypt(settings.hevy_api_key_encrypted);
+    }
+
+    try {
+      await client.query(
+        `INSERT INTO settings (user_id, hevy_api_key_encrypted, use_hevy_api)
+          VALUES ($1, $2, $3)
+          ON CONFLICT (user_id)
+          DO UPDATE SET
+            hevy_api_key_encrypted = EXCLUDED.hevy_api_key_encrypted,
+            use_hevy_api = EXCLUDED.use_hevy_api
+        `,
+        [userId, settings.hevy_api_key_encrypted, settings.use_hevy_api]
+      );
+      return true;
+    } catch (error) {
+      logger.error(
+        `[DB] [saveUserSettings] Error saving user settings. UserId: ${userId}. Error: ${error}`
+      );
+      return false;
     } finally {
       client.release();
     }

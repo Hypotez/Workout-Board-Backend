@@ -3,10 +3,11 @@ import cors from 'cors';
 
 import env from './config/env';
 
-import { apiResponseMiddleware, cookieAuth } from './middleware/middleware';
+import { apiResponseMiddleware, attachUserId, cookieAuth } from './middleware/middleware';
 import logger from './logger/logger';
 import user from './routes/user';
 import auth from './routes/auth';
+import settings from './routes/settings';
 import HevyClient from './service/hevy/hevyClient';
 import DatabaseService from './service/db';
 import cookieParser from 'cookie-parser';
@@ -58,7 +59,8 @@ async function startServer() {
   });
 
   app.use('/api/v1/auth', auth);
-  app.use('/api/v1/user', cookieAuth, user);
+  app.use('/api/v1/user', cookieAuth, attachUserId, user);
+  app.use('/api/v1/settings', cookieAuth, attachUserId, settings);
 
   app.listen(PORT, () => {
     logger.info(`Server is running on http://localhost:${PORT} NODE_ENV=${NODE_ENV}`);
