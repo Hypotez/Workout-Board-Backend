@@ -1,9 +1,9 @@
 import { Pool } from 'pg';
 import { CookieResponse, CreateUserInput, LoginUserInput } from '../schemas/shared/auth';
 import { PublicUser, PublicUserSchema } from '../schemas/shared/user';
-import { SaveSettings } from '../schemas/shared/settings';
+import { Settings } from '../schemas/shared/settings';
 import { hashPassword, comparePassword } from '../crypto/hash';
-import { encrypt } from '../crypto/encryption';
+import { encrypt, decrypt } from '../crypto/encryption';
 import logger from '../logger/logger';
 import { generateTokens } from '../crypto/jwt';
 
@@ -174,7 +174,7 @@ export default class DatabaseService {
       client.release();
     }
   }
-  async saveUserSettings(userId: string, settings: SaveSettings): Promise<boolean> {
+  async saveUserSettings(userId: string, settings: Settings): Promise<boolean> {
     const client = await this.pool.connect();
 
     if (settings.hevy_api_key_encrypted) {
@@ -198,6 +198,35 @@ export default class DatabaseService {
         `[DB] [saveUserSettings] Error saving user settings. UserId: ${userId}. Error: ${error}`
       );
       return false;
+    } finally {
+      client.release();
+    }
+  }
+  async getUserSettings(userId: string): Promise<Settings | null> {
+    const client = await this.pool.connect();
+
+    try {
+      const result = await client.query(
+        'SELECT hevy_api_key_encrypted, use_hevy_api FROM settings WHERE user_id = $1',
+        [userId]
+      );
+
+      if (result.rows.length === 0) {
+        return {
+          hevy_api_key_encrypted: null,
+          use_hevy_api: false,
+        };
+      }
+
+      return {
+        hevy_api_key_encrypted: decrypt(result.rows[0].hevy_api_key_encrypted),
+        use_hevy_api: result.rows[0].use_hevy_api,
+      };
+    } catch (error) {
+      logger.error(
+        `[DB] [getUserSettings] Error fetching user settings. UserId: ${userId}. Error: ${error}`
+      );
+      return null;
     } finally {
       client.release();
     }

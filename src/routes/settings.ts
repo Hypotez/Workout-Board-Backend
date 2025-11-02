@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { attachUserId } from '../middleware/middleware';
-import { SaveSettingsSchema } from '../schemas/shared/settings';
+import { SettingsSchema } from '../schemas/shared/settings';
 import logger from '../logger/logger';
 
 const router = Router();
@@ -8,7 +8,7 @@ const router = Router();
 router.post('/', attachUserId, async (req, res): Promise<void> => {
   const userId = req.userId!;
 
-  const settings = SaveSettingsSchema.safeParse(req.body);
+  const settings = SettingsSchema.safeParse(req.body);
 
   if (!settings.success) {
     logger.error('[/settings] Invalid settings data');
@@ -23,7 +23,14 @@ router.post('/', attachUserId, async (req, res): Promise<void> => {
 });
 
 router.get('/', attachUserId, async (req, res): Promise<void> => {
-  res.success({ message: 'User route is working' });
+  const userId = req.userId!;
+
+  const settings = await req.service.db.getUserSettings(userId);
+  if (!settings) {
+    return res.error('Failed to fetch settings', 500);
+  }
+
+  res.success(settings);
 });
 
 export default router;
