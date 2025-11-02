@@ -28,7 +28,16 @@ export default class DatabaseService {
           username VARCHAR(255) UNIQUE NOT NULL,
           email VARCHAR(255) UNIQUE NOT NULL,
           password_hash TEXT NOT NULL,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+          updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        );
+      `);
+
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS settings (
+          user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
           hevy_api_key_encrypted TEXT,
+          use_hevy_api BOOLEAN DEFAULT FALSE,
           created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
           updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
         );
@@ -50,11 +59,29 @@ export default class DatabaseService {
       `);
 
       await client.query(`
+        CREATE OR REPLACE FUNCTION update_settings_updated_at_column()
+        RETURNS TRIGGER AS $$
+        BEGIN
+          NEW.updated_at = NOW();
+          RETURN NEW;
+        END;
+        $$ language 'plpgsql';
+      `);
+
+      await client.query(`
         DROP TRIGGER IF EXISTS update_users_updated_at ON users;
         CREATE TRIGGER update_users_updated_at
           BEFORE UPDATE ON users
           FOR EACH ROW
           EXECUTE FUNCTION update_updated_at_column();
+      `);
+
+      await client.query(`
+        DROP TRIGGER IF EXISTS update_settings_updated_at ON settings;
+        CREATE TRIGGER update_settings_updated_at
+          BEFORE UPDATE ON settings
+          FOR EACH ROW
+          EXECUTE FUNCTION update_settings_updated_at_column();
       `);
 
       logger.info('[DB] Database initialized successfully');
