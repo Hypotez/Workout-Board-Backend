@@ -8,11 +8,7 @@ router.post('/', async (req, res): Promise<void> => {
 });
 
 router.get('/me', attachUserId, async (req, res): Promise<void> => {
-  const userId = req.userId;
-
-  if (!userId) {
-    return res.error('Unauthorized', 401);
-  }
+  const userId = req.userId!;
 
   const user = await req.service.db.getUserById(userId);
   if (!user) {

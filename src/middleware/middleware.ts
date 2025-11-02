@@ -60,18 +60,23 @@ export function attachUserId(req: Request, res: Response, next: NextFunction) {
 
   if (refreshToken) {
     const payload = getPayload(refreshToken);
-    req.userId = payload?.id ?? null;
+    if (!payload?.id) {
+      return res.error('Unauthorized', 401);
+    }
+    req.userId = payload.id;
     return next();
   }
 
   if (accessToken) {
     const payload = getPayload(accessToken);
-    req.userId = payload?.id ?? null;
+    if (!payload?.id) {
+      return res.error('Unauthorized', 401);
+    }
+    req.userId = payload.id;
     return next();
   }
 
-  req.userId = null;
-  next();
+  return res.error('Unauthorized', 401);
 }
 
 export function apiResponseMiddleware(req: Request, res: Response, next: NextFunction) {
