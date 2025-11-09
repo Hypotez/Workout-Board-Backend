@@ -38,7 +38,7 @@ export default class DatabaseService {
       await client.query(`
         CREATE TABLE IF NOT EXISTS settings (
           user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
-          hevy_api_key_encrypted TEXT,
+          hevy_api_key TEXT,
           use_hevy_api BOOLEAN DEFAULT FALSE,
           created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
           updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -177,20 +177,20 @@ export default class DatabaseService {
   async saveUserSettings(userId: string, settings: Settings): Promise<boolean> {
     const client = await this.pool.connect();
 
-    if (settings.hevy_api_key_encrypted) {
-      settings.hevy_api_key_encrypted = encrypt(settings.hevy_api_key_encrypted);
+    if (settings.hevy_api_key) {
+      settings.hevy_api_key = encrypt(settings.hevy_api_key);
     }
 
     try {
       await client.query(
-        `INSERT INTO settings (user_id, hevy_api_key_encrypted, use_hevy_api)
+        `INSERT INTO settings (user_id, hevy_api_key, use_hevy_api)
           VALUES ($1, $2, $3)
           ON CONFLICT (user_id)
           DO UPDATE SET
-            hevy_api_key_encrypted = EXCLUDED.hevy_api_key_encrypted,
+            hevy_api_key = EXCLUDED.hevy_api_key,
             use_hevy_api = EXCLUDED.use_hevy_api
         `,
-        [userId, settings.hevy_api_key_encrypted, settings.use_hevy_api]
+        [userId, settings.hevy_api_key, settings.use_hevy_api]
       );
       return true;
     } catch (error) {
@@ -207,19 +207,26 @@ export default class DatabaseService {
 
     try {
       const result = await client.query(
-        'SELECT hevy_api_key_encrypted, use_hevy_api FROM settings WHERE user_id = $1',
+        'SELECT hevy_api_key, use_hevy_api FROM settings WHERE user_id = $1',
         [userId]
       );
 
       if (result.rows.length === 0) {
         return {
-          hevy_api_key_encrypted: null,
+          hevy_api_key: '',
           use_hevy_api: false,
         };
       }
 
+      if (!result.rows[0].hevy_api_key) {
+        return {
+          hevy_api_key: '',
+          use_hevy_api: result.rows[0].use_hevy_api,
+        };
+      }
+
       return {
-        hevy_api_key_encrypted: decrypt(result.rows[0].hevy_api_key_encrypted),
+        hevy_api_key: decrypt(result.rows[0].hevy_api_key),
         use_hevy_api: result.rows[0].use_hevy_api,
       };
     } catch (error) {
