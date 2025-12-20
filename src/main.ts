@@ -1,7 +1,13 @@
 import Fastify from 'fastify';
-import { serializerCompiler, validatorCompiler } from 'fastify-type-provider-zod';
+import {
+  serializerCompiler,
+  validatorCompiler,
+  jsonSchemaTransform,
+} from 'fastify-type-provider-zod';
 import cors from '@fastify/cors';
 import cookie from '@fastify/cookie';
+import fastifySwagger from '@fastify/swagger';
+import fastifySwaggerUI from '@fastify/swagger-ui';
 
 import env from './config/env';
 
@@ -47,6 +53,22 @@ async function startServer() {
   fastify.setValidatorCompiler(validatorCompiler);
   fastify.setSerializerCompiler(serializerCompiler);
 
+  fastify.register(fastifySwagger, {
+    openapi: {
+      info: {
+        title: 'SampleApi',
+        description: 'Sample backend service',
+        version: '1.0.0',
+      },
+      servers: [],
+    },
+    transform: jsonSchemaTransform,
+  });
+
+  fastify.register(fastifySwaggerUI, {
+    routePrefix: '/documentation',
+  });
+
   await fastify.register(cors, {
     origin: FRONTEND_URL,
     credentials: true,
@@ -79,7 +101,8 @@ async function startServer() {
   */
 
   fastify.addHook('preHandler', async (request) => {
-    logger.info('inside first prehandler');
+    if (request.url.startsWith('/documentation')) return;
+    logger.info(`${request.method} ${request.url}`);
     request.service = {
       hevyClient: new HevyClient(),
       db: DB,
@@ -92,13 +115,13 @@ async function startServer() {
   await fastify.register(user, { prefix: '/api/v1/user' });
   await fastify.register(settings, { prefix: '/api/v1/settings' });
 
-  fastify.listen({ port: PORT }, (err, address) => {
-    if (err) {
-      logger.error(err);
-      process.exit(1);
-    }
+  try {
+    const address = await fastify.listen({ port: PORT });
     logger.info(`Server is running on ${address} NODE_ENV=${NODE_ENV}`);
-  });
+  } catch (err) {
+    logger.error(err);
+    process.exit(1);
+  }
 
   /*
   app.use('/api/v1/auth', auth);
