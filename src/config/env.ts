@@ -4,7 +4,7 @@ import { z } from 'zod';
 dotenv.config();
 
 const EnvSchema = z.object({
-  PORT: z.string().min(1, 'Port cannot be empty').default('3000'),
+  PORT: z.number().min(1, 'Port cannot be empty').default(3000),
   NODE_ENV: z
     .enum(['development', 'production'], 'NODE_ENV must be either "development" or "production"')
     .default('development'),

@@ -1,16 +1,19 @@
-import { Router } from 'express';
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import attachUserId from '../hooks/attachUserId';
+import cookieAuth from '../hooks/cookieAuth';
 
-const router = Router();
+export default async function userRoutes(fastify: FastifyInstance) {
+  fastify.addHook('preHandler', cookieAuth);
+  fastify.addHook('preHandler', attachUserId);
 
-router.get('/me', async (req, res): Promise<void> => {
-  const userId = req.userId!;
+  fastify.get('/me', async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
+    const userId = request.userId!;
+    const user = await request.service.db.getUserById(userId);
 
-  const user = await req.service.db.getUserById(userId);
-  if (!user) {
-    return res.error('User not found', 404);
-  }
+    if (!user) {
+      return reply.code(404).send({ error: 'User not found' });
+    }
 
-  res.success(user);
-});
-
-export default router;
+    reply.code(200).send(user);
+  });
+}

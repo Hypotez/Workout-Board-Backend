@@ -1,36 +1,34 @@
-import { Router } from 'express';
-import { attachUserId } from '../middleware/middleware';
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import attachUserId from '../hooks/attachUserId';
 import { SettingsSchema } from '../schemas/shared/settings';
 import logger from '../logger/logger';
 
-const router = Router();
+export default async function settingsRoutes(fastify: FastifyInstance) {
+  fastify.addHook('preHandler', attachUserId);
 
-router.post('/', attachUserId, async (req, res): Promise<void> => {
-  const userId = req.userId!;
+  fastify.post('/', async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
+    const userId = request.userId!;
+    const settings = SettingsSchema.safeParse(request.body);
 
-  const settings = SettingsSchema.safeParse(req.body);
+    if (!settings.success) {
+      logger.error('[/settings] Invalid settings data');
+      return reply.code(400).send({ error: 'Invalid settings data' });
+    }
 
-  if (!settings.success) {
-    logger.error('[/settings] Invalid settings data');
-    return res.error();
-  }
+    const saveSettings = await request.service.db.saveUserSettings(userId, settings.data);
+    if (!saveSettings) {
+      return reply.code(500).send({ error: 'Failed to save settings' });
+    }
+    reply.code(200).send();
+  });
 
-  const saveSettings = await req.service.db.saveUserSettings(userId, settings.data);
-  if (!saveSettings) {
-    return res.error('Failed to save settings', 500);
-  }
-  res.success();
-});
+  fastify.get('/', async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
+    const userId = request.userId!;
 
-router.get('/', attachUserId, async (req, res): Promise<void> => {
-  const userId = req.userId!;
-
-  const settings = await req.service.db.getUserSettings(userId);
-  if (!settings) {
-    return res.error('Failed to fetch settings', 500);
-  }
-
-  res.success(settings);
-});
-
-export default router;
+    const settings = await request.service.db.getUserSettings(userId);
+    if (!settings) {
+      return reply.code(500).send({ error: 'Failed to fetch settings' });
+    }
+    reply.code(200).send(settings);
+  });
+}

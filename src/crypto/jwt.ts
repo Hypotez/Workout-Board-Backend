@@ -1,4 +1,4 @@
-import { Response } from 'express';
+import { FastifyReply } from 'fastify';
 import { sign, decode, verify, SignOptions, JwtPayload } from 'jsonwebtoken';
 
 import { CookieResponse } from '../schemas/shared/auth';
@@ -42,15 +42,15 @@ export function generateTokens(id: string): CookieResponse {
   };
 }
 
-export function setCookies(res: Response, cookieResponse: CookieResponse): void {
-  res.cookie(ACCESS_TOKEN_STRING, cookieResponse.access_token, {
+export function setCookies(reply: FastifyReply, cookieResponse: CookieResponse): void {
+  reply.cookie(ACCESS_TOKEN_STRING, cookieResponse.access_token, {
     httpOnly: true,
     secure: NODE_ENV === PRODUCTION_STRING,
     sameSite: SAME_SITE_STRING,
     expires: new Date(cookieResponse.access_token_expiration * 1000),
   });
 
-  res.cookie(REFRESH_TOKEN_STRING, cookieResponse.refresh_token, {
+  reply.cookie(REFRESH_TOKEN_STRING, cookieResponse.refresh_token, {
     httpOnly: true,
     secure: NODE_ENV === PRODUCTION_STRING,
     sameSite: SAME_SITE_STRING,
@@ -58,14 +58,14 @@ export function setCookies(res: Response, cookieResponse: CookieResponse): void 
   });
 }
 
-export function clearCookies(res: Response): void {
-  res.clearCookie(ACCESS_TOKEN_STRING, {
+export function clearCookies(reply: FastifyReply): void {
+  reply.clearCookie(ACCESS_TOKEN_STRING, {
     httpOnly: true,
     secure: NODE_ENV === PRODUCTION_STRING,
     sameSite: SAME_SITE_STRING,
   });
 
-  res.clearCookie(REFRESH_TOKEN_STRING, {
+  reply.clearCookie(REFRESH_TOKEN_STRING, {
     httpOnly: true,
     secure: NODE_ENV === PRODUCTION_STRING,
     sameSite: SAME_SITE_STRING,
