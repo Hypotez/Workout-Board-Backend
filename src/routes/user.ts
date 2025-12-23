@@ -13,6 +13,10 @@ export default async function userRoutes(fastify: FastifyInstance) {
     method: 'GET',
     url: '/me',
     schema: {
+      description: 'Get the authenticated user',
+      tags: ['User'],
+      summary: 'Retrieve information about the currently authenticated user',
+      security: [{ cookieAuth: [] }],
       response: {
         200: PublicUserSchema,
         404: z.object({ error: z.string() }),

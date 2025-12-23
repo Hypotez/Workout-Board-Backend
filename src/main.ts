@@ -56,11 +56,35 @@ async function startServer() {
   fastify.register(fastifySwagger, {
     openapi: {
       info: {
-        title: 'SampleApi',
-        description: 'Sample backend service',
+        title: 'Workout Board API',
+        summary: 'API documentation for the Workout Board application',
+        description: 'API documentation for the Workout Board application',
         version: '1.0.0',
       },
-      servers: [],
+      tags: [
+        {
+          name: 'Authentication',
+          description: 'Endpoints related to user authentication',
+        },
+        {
+          name: 'User',
+          description: 'Endpoints related to user information',
+        },
+        {
+          name: 'Settings',
+          description: 'Endpoints related to user settings',
+        },
+      ],
+      components: {
+        securitySchemes: {
+          cookieAuth: {
+            type: 'apiKey',
+            in: 'cookie',
+            name: 'session_id',
+            description: 'Session cookie for user authentication',
+          },
+        },
+      },
     },
     transform: jsonSchemaTransform,
   });
@@ -102,7 +126,6 @@ async function startServer() {
 
   fastify.addHook('preHandler', async (request) => {
     if (request.url.startsWith('/documentation')) return;
-    logger.info(`${request.method} ${request.url}`);
     request.service = {
       hevyClient: new HevyClient(),
       db: DB,
