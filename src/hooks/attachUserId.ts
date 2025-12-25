@@ -1,7 +1,7 @@
 import { getPayload } from '../crypto/jwt';
 import { FastifyRequest, FastifyReply } from 'fastify';
 
-export default function attachUserId(request: FastifyRequest, reply: FastifyReply) {
+export default async function attachUserId(request: FastifyRequest, reply: FastifyReply) {
   const accessToken = request.cookies?.access_token;
   const refreshToken = request.cookies?.refresh_token;
 

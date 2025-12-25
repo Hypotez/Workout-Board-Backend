@@ -6,9 +6,6 @@ import { z } from 'zod';
 import type { ZodTypeProvider } from 'fastify-type-provider-zod';
 
 export default async function userRoutes(fastify: FastifyInstance) {
-  fastify.addHook('preHandler', cookieAuth);
-  fastify.addHook('preHandler', attachUserId);
-
   fastify.withTypeProvider<ZodTypeProvider>().route({
     method: 'GET',
     url: '/me',
@@ -22,6 +19,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
         404: z.object({ error: z.string() }),
       },
     },
+    preHandler: [cookieAuth, attachUserId],
     handler: async (request: FastifyRequest, reply: FastifyReply) => {
       const userId = request.userId!;
       const user = await request.service.db.getUserById(userId);

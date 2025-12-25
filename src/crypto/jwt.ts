@@ -43,33 +43,37 @@ export function generateTokens(id: string): CookieResponse {
 }
 
 export function setCookies(reply: FastifyReply, cookieResponse: CookieResponse): void {
-  reply.cookie(ACCESS_TOKEN_STRING, cookieResponse.access_token, {
-    httpOnly: true,
-    secure: NODE_ENV === PRODUCTION_STRING,
-    sameSite: SAME_SITE_STRING,
-    expires: new Date(cookieResponse.access_token_expiration * 1000),
-  });
-
-  reply.cookie(REFRESH_TOKEN_STRING, cookieResponse.refresh_token, {
-    httpOnly: true,
-    secure: NODE_ENV === PRODUCTION_STRING,
-    sameSite: SAME_SITE_STRING,
-    expires: new Date(cookieResponse.refresh_token_expiration * 1000),
-  });
+  reply
+    .setCookie(ACCESS_TOKEN_STRING, cookieResponse.access_token, {
+      path: '/',
+      httpOnly: true,
+      secure: NODE_ENV === PRODUCTION_STRING,
+      sameSite: SAME_SITE_STRING,
+      expires: new Date(cookieResponse.access_token_expiration * 1000),
+    })
+    .setCookie(REFRESH_TOKEN_STRING, cookieResponse.refresh_token, {
+      path: '/',
+      httpOnly: true,
+      secure: NODE_ENV === PRODUCTION_STRING,
+      sameSite: SAME_SITE_STRING,
+      expires: new Date(cookieResponse.refresh_token_expiration * 1000),
+    });
 }
 
 export function clearCookies(reply: FastifyReply): void {
-  reply.clearCookie(ACCESS_TOKEN_STRING, {
-    httpOnly: true,
-    secure: NODE_ENV === PRODUCTION_STRING,
-    sameSite: SAME_SITE_STRING,
-  });
-
-  reply.clearCookie(REFRESH_TOKEN_STRING, {
-    httpOnly: true,
-    secure: NODE_ENV === PRODUCTION_STRING,
-    sameSite: SAME_SITE_STRING,
-  });
+  reply
+    .clearCookie(ACCESS_TOKEN_STRING, {
+      path: '/',
+      httpOnly: true,
+      secure: NODE_ENV === PRODUCTION_STRING,
+      sameSite: SAME_SITE_STRING,
+    })
+    .clearCookie(REFRESH_TOKEN_STRING, {
+      path: '/',
+      httpOnly: true,
+      secure: NODE_ENV === PRODUCTION_STRING,
+      sameSite: SAME_SITE_STRING,
+    });
 }
 
 export function verifyAccessToken(token: string): boolean {

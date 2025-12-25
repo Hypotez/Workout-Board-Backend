@@ -61,7 +61,7 @@ export default async function settingsRoutes(fastify: FastifyInstance) {
       if (!settings) {
         return reply.code(500).send({ error: 'Failed to fetch settings' });
       }
-      reply.code(200).send(settings);
+      return reply.code(200).send(settings);
     },
   });
 }
