@@ -32,7 +32,7 @@ export default class HttpClient {
         finalResponse = await response.text();
       }
     } catch (error) {
-      logger.error('[HttpClient][FetchWithAuth][Content-Type]', error);
+      logger.error('[HttpClient][FetchWithAuth][Content-Type] ' + error);
     }
 
     if (response.ok) {

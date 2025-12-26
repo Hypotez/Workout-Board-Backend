@@ -15,7 +15,7 @@ const EnvSchema = z.object({
     .string()
     .min(32, 'ENCRYPTION_KEY must be at least 32 characters long')
     .default('xfn9P8L9rIpKtWaa68IZ3G865WfdYXNY'),
-  LOG_LEVEL: z.enum(['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly']).default('info'),
+  LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
 });
 
 const result = EnvSchema.safeParse(process.env);

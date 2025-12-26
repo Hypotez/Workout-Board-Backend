@@ -20,10 +20,7 @@ import DatabaseService from './service/db';
 
 import { Service } from './types/service';
 
-//import { ResponseHelpers } from './types/express';
-
 const PORT = env.PORT;
-const NODE_ENV = env.NODE_ENV;
 const FRONTEND_URL = env.FRONTEND_URL;
 
 declare module 'fastify' {
@@ -32,23 +29,22 @@ declare module 'fastify' {
     userId: string | null;
   }
 }
-/*
-declare module 'express-serve-static-core' {
-  export interface Request {
-    service: Service;
-    userId: string | null;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  export interface Response extends ResponseHelpers {}
-}
-*/
 
 async function startServer() {
   const DB = new DatabaseService();
   await DB.initialize();
 
-  const fastify = Fastify();
+  const fastify = Fastify({
+    logger: {
+      level: env.LOG_LEVEL,
+      transport: {
+        target: 'pino-pretty',
+        options: {
+          colorize: true,
+        },
+      },
+    },
+  });
 
   fastify.setValidatorCompiler(validatorCompiler);
   fastify.setSerializerCompiler(serializerCompiler);
@@ -100,30 +96,6 @@ async function startServer() {
 
   await fastify.register(cookie);
 
-  /*
-  app.use(express.urlencoded({ extended: true, limit: '1mb' }));
-  app.use(express.json({ limit: '1mb' }));
-  app.use(
-    cors({
-      origin: FRONTEND_URL,
-      credentials: true,
-    })
-  );
-  app.use(apiResponseMiddleware);
-  app.use(cookieParser());
-
-  app.use((req, _, next) => {
-    req.service = {
-      hevyClient: new HevyClient(),
-      db: DB,
-    };
-
-    req.userId = null;
-
-    next();
-  });
-  */
-
   fastify.addHook('preHandler', async (request) => {
     if (request.url.startsWith('/documentation')) return;
     request.service = {
@@ -139,8 +111,7 @@ async function startServer() {
   await fastify.register(settings, { prefix: '/api/v1/settings' });
 
   try {
-    const address = await fastify.listen({ port: PORT });
-    logger.info(`Server is running on ${address} NODE_ENV=${NODE_ENV}`);
+    await fastify.listen({ port: PORT });
   } catch (err) {
     logger.error(err);
     process.exit(1);

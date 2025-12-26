@@ -4,7 +4,7 @@ import { PublicUser, PublicUserSchema } from '../schemas/shared/user';
 import { Settings } from '../schemas/shared/settings';
 import { hashPassword, comparePassword } from '../crypto/hash';
 import { encrypt, decrypt } from '../crypto/encryption';
-import logger from '../logger/logger';
+import { databaseLogger } from '../logger/logger';
 import { generateTokens } from '../crypto/jwt';
 
 export default class DatabaseService {
@@ -21,6 +21,7 @@ export default class DatabaseService {
   }
 
   async initialize(): Promise<void> {
+    const logger = databaseLogger.child({ method: 'initialize' });
     const client = await this.pool.connect();
 
     try {
@@ -86,9 +87,9 @@ export default class DatabaseService {
           EXECUTE FUNCTION update_settings_updated_at_column();
       `);
 
-      logger.info('[DB] Database initialized successfully');
+      logger.info('Database initialized successfully');
     } catch (error) {
-      logger.error('[DB] Error initializing database:', error);
+      logger.error('Error initializing database:' + error);
     } finally {
       client.release();
     }
@@ -107,7 +108,7 @@ export default class DatabaseService {
 
       return await generateTokens(result.rows[0].id);
     } catch (error) {
-      logger.error('[DB] [createUser] Error creating user:', error);
+      databaseLogger.error('[DB] [createUser] Error creating user:' + error);
       return null;
     } finally {
       client.release();
@@ -137,9 +138,10 @@ export default class DatabaseService {
         return null;
       }
 
+      databaseLogger.info('[DB] [login] User logged in successfully: ' + user.id);
       return generateTokens(user.id);
     } catch (error) {
-      logger.error('[DB] [login] Error logging in user:', error);
+      databaseLogger.error('[DB] [login] Error logging in user:' + error);
       return null;
     } finally {
       client.release();
@@ -162,13 +164,15 @@ export default class DatabaseService {
       const schemaParse = PublicUserSchema.safeParse(result.rows[0]);
 
       if (!schemaParse.success) {
-        logger.error('[DB] [getUserById] Failed to parse user data from DB');
+        databaseLogger.error('[DB] [getUserById] Failed to parse user data from DB');
         return null;
       }
 
       return schemaParse.data;
     } catch (error) {
-      logger.error(`[DB] [getUserById] Error fetching user by ID. Id: ${userId}. Error: ${error}`);
+      databaseLogger.error(
+        `[DB] [getUserById] Error fetching user by ID. Id: ${userId}. Error: ${error}`
+      );
       return null;
     } finally {
       client.release();
@@ -194,7 +198,7 @@ export default class DatabaseService {
       );
       return true;
     } catch (error) {
-      logger.error(
+      databaseLogger.error(
         `[DB] [saveUserSettings] Error saving user settings. UserId: ${userId}. Error: ${error}`
       );
       return false;
@@ -230,7 +234,7 @@ export default class DatabaseService {
         use_hevy_api: result.rows[0].use_hevy_api,
       };
     } catch (error) {
-      logger.error(
+      databaseLogger.error(
         `[DB] [getUserSettings] Error fetching user settings. UserId: ${userId}. Error: ${error}`
       );
       return null;
