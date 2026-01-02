@@ -146,17 +146,13 @@ export interface IDatabaseService {
    * @param username The username of the new user.
    * @param password The password of the new user.
    * @param email The email of the new user.
-   * @returns A session cookie if successful, null otherwise.
+   * @returns A session cookie if successful.
    */
-  createUser(user: {
-    username: string;
-    password: string;
-    email: string;
-  }): Promise<CookieResponse | null>;
+  createUser(user: { username: string; password: string; email: string }): Promise<CookieResponse>;
   /**
    * Log in a user with the provided credentials.
    * @param userData The login credentials (username/email and password).
-   * @returns A session cookie if successful, null otherwise.
+   * @returns A session cookie if successful, null if invalid credentials.
    */
   login(userData: LoginUserInput): Promise<CookieResponse | null>;
   /**
@@ -169,15 +165,15 @@ export interface IDatabaseService {
    * Save user settings to the database.
    * @param userId The ID of the user whose settings are to be saved.
    * @param settings The settings to be saved.
-   * @returns True if successful, false otherwise.
+   * @returns void
    */
-  saveUserSettings(userId: string, settings: Settings): Promise<boolean>;
+  saveUserSettings(userId: string, settings: Settings): Promise<void>;
   /**
    * Get user settings from the database.
    * @param userId The ID of the user whose settings are to be retrieved.
-   * @returns The user settings if found, null otherwise.
+   * @returns The user settings if found.
    */
-  getUserSettings(userId: string): Promise<Settings | null>;
+  getUserSettings(userId: string): Promise<Settings>;
 }
 
 export interface HevyClientService {

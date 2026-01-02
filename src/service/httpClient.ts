@@ -1,4 +1,3 @@
-import logger from '../logger/logger';
 import { ApiResponse, SuccessResponse, SuccessString } from '../schemas/shared/api';
 import { UrlType, UuidType } from '../schemas/shared/common';
 
@@ -31,8 +30,8 @@ export default class HttpClient {
       } else if (contentType?.includes('text/plain')) {
         finalResponse = await response.text();
       }
-    } catch (error) {
-      logger.error('[HttpClient][FetchWithAuth][Content-Type] ' + error);
+    } catch {
+      // ignore body parse errors
     }
 
     if (response.ok) {
@@ -48,9 +47,11 @@ export default class HttpClient {
       return returnResponse;
     }
 
+    /*
     logger.error(
-      `[HttpClient][FetchWithAuth][Response] Status: ${response.status} , Text: ${response.statusText} `
+      `Status: ${response.status} , Text: ${response.statusText} `
     );
+    */
 
     return null;
   }

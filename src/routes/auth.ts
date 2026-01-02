@@ -1,7 +1,11 @@
 import { clearCookies, setCookies } from '../crypto/jwt';
-import { CreateUserSchema, LoginUserSchema } from '../schemas/shared/auth';
+import {
+  CreateUserSchema,
+  LoginUserSchema,
+  LoginUserInput,
+  CreateUserInput,
+} from '../schemas/shared/auth';
 import cookieAuth from '../hooks/cookieAuth';
-import logger from '../logger/logger';
 import { z } from 'zod';
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import type { ZodTypeProvider } from 'fastify-type-provider-zod';
@@ -17,31 +21,19 @@ export default async function authRoutes(fastify: FastifyInstance) {
       body: CreateUserSchema,
       response: {
         200: z.object({}),
-        400: z.object({ error: z.string() }),
         500: z.object({ error: z.string() }),
       },
     },
-    handler: async (request: FastifyRequest, reply: FastifyReply) => {
-      const user = CreateUserSchema.safeParse(request.body);
+    handler: async (request: FastifyRequest<{ Body: CreateUserInput }>, reply: FastifyReply) => {
+      try {
+        const cookie = await request.service.db.createUser(request.body);
 
-      if (!user.success) {
-        logger.error('[/register] Invalid user data');
-        return reply.code(400).send({ error: 'Invalid user data' });
-      }
-
-      const cookie = await request.service.db.createUser({
-        username: user.data.username,
-        password: user.data.password,
-        email: user.data.email,
-      });
-
-      if (cookie) {
         await setCookies(reply, cookie);
         return reply.code(200).send();
+      } catch (error) {
+        request.log.error(`Error during user registration: ${error}`);
+        return reply.code(500).send({ error: 'User registration failed' });
       }
-
-      logger.error('[/register] Could not create user');
-      reply.code(500).send({ error: 'Could not create user' });
     },
   });
 
@@ -55,26 +47,24 @@ export default async function authRoutes(fastify: FastifyInstance) {
       body: LoginUserSchema,
       response: {
         200: z.object({}),
-        400: z.object({ error: z.string() }),
         401: z.object({ error: z.string() }),
+        500: z.object({ error: z.string() }),
       },
     },
-    handler: async (request: FastifyRequest, reply: FastifyReply) => {
-      const login = LoginUserSchema.safeParse(request.body);
-      if (!login.success) {
-        logger.error('[/login] Invalid user data');
-        return reply.code(400).send({ error: 'Invalid user data' });
-      }
+    handler: async (request: FastifyRequest<{ Body: LoginUserInput }>, reply: FastifyReply) => {
+      try {
+        const cookie = await request.service.db.login(request.body);
 
-      const cookie = await request.service.db.login(login.data);
-      if (cookie) {
+        if (!cookie) {
+          return reply.code(401).send({ error: 'Unauthorized' });
+        }
+
         await setCookies(reply, cookie);
-        logger.info('[/login] User logged in successfully');
         return reply.code(200).send();
+      } catch (error) {
+        request.log.error(`Error during user login: ${error}`);
+        return reply.code(500).send({ error: 'Login failed' });
       }
-
-      logger.error('[/login] Invalid credentials');
-      return reply.code(401).send({ error: 'Unauthorized' });
     },
   });
 
@@ -90,7 +80,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
         200: z.object({}),
       },
     },
-    handler: async (request: FastifyRequest, reply: FastifyReply) => {
+    handler: async (_: FastifyRequest, reply: FastifyReply) => {
       clearCookies(reply);
       return reply.code(200).send();
     },
@@ -103,6 +93,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
       description: 'Validate the current user session',
       tags: ['Authentication'],
       summary: 'Validate user session',
+      security: [{ cookieAuth: [] }],
       response: {
         200: z.object({}),
         401: z.object({ error: z.string() }),

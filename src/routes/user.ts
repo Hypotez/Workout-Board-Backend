@@ -17,18 +17,24 @@ export default async function userRoutes(fastify: FastifyInstance) {
       response: {
         200: PublicUserSchema,
         404: z.object({ error: z.string() }),
+        500: z.object({ error: z.string() }),
       },
     },
     preHandler: [cookieAuth, attachUserId],
     handler: async (request: FastifyRequest, reply: FastifyReply) => {
-      const userId = request.userId!;
-      const user = await request.service.db.getUserById(userId);
+      try {
+        const userId = request.userId!;
+        const user = await request.service.db.getUserById(userId);
 
-      if (!user) {
-        return reply.code(404).send({ error: 'User not found' });
+        if (!user) {
+          return reply.code(404).send({ error: 'User not found' });
+        }
+
+        return reply.code(200).send(user);
+      } catch (error) {
+        request.log.error(`Error fetching user data: ${error}`);
+        return reply.code(500).send({ error: 'Failed to fetch user data' });
       }
-
-      reply.code(200).send(user);
     },
   });
 }

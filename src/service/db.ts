@@ -4,7 +4,6 @@ import { PublicUser, PublicUserSchema } from '../schemas/shared/user';
 import { Settings } from '../schemas/shared/settings';
 import { hashPassword, comparePassword } from '../crypto/hash';
 import { encrypt, decrypt } from '../crypto/encryption';
-import { databaseLogger } from '../logger/logger';
 import { generateTokens } from '../crypto/jwt';
 
 export default class DatabaseService {
@@ -21,7 +20,6 @@ export default class DatabaseService {
   }
 
   async initialize(): Promise<void> {
-    const logger = databaseLogger.child({ method: 'initialize' });
     const client = await this.pool.connect();
 
     try {
@@ -86,16 +84,12 @@ export default class DatabaseService {
           FOR EACH ROW
           EXECUTE FUNCTION update_settings_updated_at_column();
       `);
-
-      logger.info('Database initialized successfully');
-    } catch (error) {
-      logger.error('Error initializing database:' + error);
     } finally {
       client.release();
     }
   }
 
-  async createUser(userData: CreateUserInput): Promise<CookieResponse | null> {
+  async createUser(userData: CreateUserInput): Promise<CookieResponse> {
     const client = await this.pool.connect();
 
     try {
@@ -107,9 +101,6 @@ export default class DatabaseService {
       );
 
       return await generateTokens(result.rows[0].id);
-    } catch (error) {
-      databaseLogger.error('[DB] [createUser] Error creating user:' + error);
-      return null;
     } finally {
       client.release();
     }
@@ -138,11 +129,7 @@ export default class DatabaseService {
         return null;
       }
 
-      databaseLogger.info('[DB] [login] User logged in successfully: ' + user.id);
       return generateTokens(user.id);
-    } catch (error) {
-      databaseLogger.error('[DB] [login] Error logging in user:' + error);
-      return null;
     } finally {
       client.release();
     }
@@ -164,28 +151,23 @@ export default class DatabaseService {
       const schemaParse = PublicUserSchema.safeParse(result.rows[0]);
 
       if (!schemaParse.success) {
-        databaseLogger.error('[DB] [getUserById] Failed to parse user data from DB');
-        return null;
+        throw new Error('Failed to parse user data from DB');
       }
 
       return schemaParse.data;
-    } catch (error) {
-      databaseLogger.error(
-        `[DB] [getUserById] Error fetching user by ID. Id: ${userId}. Error: ${error}`
-      );
-      return null;
     } finally {
       client.release();
     }
   }
-  async saveUserSettings(userId: string, settings: Settings): Promise<boolean> {
+
+  async saveUserSettings(userId: string, settings: Settings) {
     const client = await this.pool.connect();
 
-    if (settings.hevy_api_key) {
-      settings.hevy_api_key = encrypt(settings.hevy_api_key);
-    }
-
     try {
+      if (settings.hevy_api_key) {
+        settings.hevy_api_key = encrypt(settings.hevy_api_key);
+      }
+
       await client.query(
         `INSERT INTO settings (user_id, hevy_api_key, use_hevy_api)
           VALUES ($1, $2, $3)
@@ -196,17 +178,12 @@ export default class DatabaseService {
         `,
         [userId, settings.hevy_api_key, settings.use_hevy_api]
       );
-      return true;
-    } catch (error) {
-      databaseLogger.error(
-        `[DB] [saveUserSettings] Error saving user settings. UserId: ${userId}. Error: ${error}`
-      );
-      return false;
     } finally {
       client.release();
     }
   }
-  async getUserSettings(userId: string): Promise<Settings | null> {
+
+  async getUserSettings(userId: string): Promise<Settings> {
     const client = await this.pool.connect();
 
     try {
@@ -233,11 +210,6 @@ export default class DatabaseService {
         hevy_api_key: decrypt(result.rows[0].hevy_api_key),
         use_hevy_api: result.rows[0].use_hevy_api,
       };
-    } catch (error) {
-      databaseLogger.error(
-        `[DB] [getUserSettings] Error fetching user settings. UserId: ${userId}. Error: ${error}`
-      );
-      return null;
     } finally {
       client.release();
     }

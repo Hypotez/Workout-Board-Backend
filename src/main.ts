@@ -11,12 +11,13 @@ import fastifySwaggerUI from '@fastify/swagger-ui';
 
 import env from './config/env';
 
-import logger from './logger/logger';
 import user from './routes/user';
 import auth from './routes/auth';
 import settings from './routes/settings';
 import HevyClient from './service/hevy/hevyClient';
 import DatabaseService from './service/db';
+
+import loggerSetup from './config/logger';
 
 import { Service } from './types/service';
 
@@ -35,15 +36,7 @@ async function startServer() {
   await DB.initialize();
 
   const fastify = Fastify({
-    logger: {
-      level: env.LOG_LEVEL,
-      transport: {
-        target: 'pino-pretty',
-        options: {
-          colorize: true,
-        },
-      },
-    },
+    logger: loggerSetup,
   });
 
   fastify.setValidatorCompiler(validatorCompiler);
@@ -113,7 +106,7 @@ async function startServer() {
   try {
     await fastify.listen({ port: PORT });
   } catch (err) {
-    logger.error(err);
+    fastify.log.error(err);
     process.exit(1);
   }
 

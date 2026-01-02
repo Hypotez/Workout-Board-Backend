@@ -1,8 +1,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import attachUserId from '../hooks/attachUserId';
-import { SettingsSchema } from '../schemas/shared/settings';
+import { SettingsSchema, Settings } from '../schemas/shared/settings';
 import { z } from 'zod';
-import logger from '../logger/logger';
 import type { ZodTypeProvider } from 'fastify-type-provider-zod';
 
 export default async function settingsRoutes(fastify: FastifyInstance) {
@@ -15,6 +14,7 @@ export default async function settingsRoutes(fastify: FastifyInstance) {
       description: 'Save user settings.',
       tags: ['Settings'],
       summary: 'Save user settings',
+      body: SettingsSchema,
       security: [{ cookieAuth: [] }],
       response: {
         200: z.object({}),
@@ -23,20 +23,16 @@ export default async function settingsRoutes(fastify: FastifyInstance) {
         500: z.object({ error: z.string() }),
       },
     },
-    handler: async (request: FastifyRequest, reply: FastifyReply) => {
-      const userId = request.userId!;
-      const settings = SettingsSchema.safeParse(request.body);
+    handler: async (request: FastifyRequest<{ Body: Settings }>, reply: FastifyReply) => {
+      try {
+        const userId = request.userId!;
 
-      if (!settings.success) {
-        logger.error('[/settings] Invalid settings data');
-        return reply.code(400).send({ error: 'Invalid settings data' });
-      }
-
-      const saveSettings = await request.service.db.saveUserSettings(userId, settings.data);
-      if (!saveSettings) {
+        await request.service.db.saveUserSettings(userId, request.body);
+        return reply.code(200).send();
+      } catch (error) {
+        request.log.error(`Error saving user settings: ${error}`);
         return reply.code(500).send({ error: 'Failed to save settings' });
       }
-      reply.code(200).send();
     },
   });
 
@@ -55,13 +51,14 @@ export default async function settingsRoutes(fastify: FastifyInstance) {
       },
     },
     handler: async (request: FastifyRequest, reply: FastifyReply) => {
-      const userId = request.userId!;
-
-      const settings = await request.service.db.getUserSettings(userId);
-      if (!settings) {
+      try {
+        const userId = request.userId!;
+        const settings = await request.service.db.getUserSettings(userId);
+        return reply.code(200).send(settings);
+      } catch (error) {
+        request.log.error(`Error fetching user settings: ${error}`);
         return reply.code(500).send({ error: 'Failed to fetch settings' });
       }
-      return reply.code(200).send(settings);
     },
   });
 }
