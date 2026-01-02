@@ -18,6 +18,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
       description: 'On success, sets authentication cookies.',
       tags: ['Authentication'],
       summary: 'Register a new user',
+      security: [],
       body: CreateUserSchema,
       response: {
         200: z.object({}),
@@ -44,6 +45,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
       description: 'On success, sets authentication cookies.',
       tags: ['Authentication'],
       summary: 'Login as a user',
+      security: [],
       body: LoginUserSchema,
       response: {
         200: z.object({}),
@@ -75,7 +77,6 @@ export default async function authRoutes(fastify: FastifyInstance) {
       description: 'On success, clears authentication cookies.',
       tags: ['Authentication'],
       summary: 'Logout the current user',
-      security: [{ cookieAuth: [] }],
       response: {
         200: z.object({}),
       },
@@ -93,7 +94,6 @@ export default async function authRoutes(fastify: FastifyInstance) {
       description: 'Validate the current user session',
       tags: ['Authentication'],
       summary: 'Validate user session',
-      security: [{ cookieAuth: [] }],
       response: {
         200: z.object({}),
         401: z.object({ error: z.string() }),

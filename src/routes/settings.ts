@@ -15,7 +15,6 @@ export default async function settingsRoutes(fastify: FastifyInstance) {
       tags: ['Settings'],
       summary: 'Save user settings',
       body: SettingsSchema,
-      security: [{ cookieAuth: [] }],
       response: {
         200: z.object({}),
         400: z.object({ error: z.string() }),
@@ -43,7 +42,6 @@ export default async function settingsRoutes(fastify: FastifyInstance) {
       description: 'Get user settings.',
       tags: ['Settings'],
       summary: 'Get user settings',
-      security: [{ cookieAuth: [] }],
       response: {
         200: SettingsSchema,
         401: z.object({ error: z.string() }),

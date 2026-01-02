@@ -50,6 +50,7 @@ async function startServer() {
         description: 'API documentation for the Workout Board application',
         version: '1.0.0',
       },
+      security: [{ cookieAuth: [] }],
       tags: [
         {
           name: 'Authentication',
@@ -69,8 +70,9 @@ async function startServer() {
           cookieAuth: {
             type: 'apiKey',
             in: 'cookie',
-            name: 'session_id',
-            description: 'Session cookie for user authentication',
+            name: 'access_token',
+            description:
+              'Cookie-based auth. Use /api/v1/auth/login (Try it out) to receive the cookies to use some of the locked requests.',
           },
         },
       },
