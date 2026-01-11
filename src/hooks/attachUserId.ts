@@ -1,5 +1,6 @@
 import { getPayload } from '../crypto/jwt';
 import { FastifyRequest, FastifyReply } from 'fastify';
+import { ERRORS, errorResponse } from '../schemas/shared/error';
 
 export default async function attachUserId(request: FastifyRequest, reply: FastifyReply) {
   const accessToken = request.cookies?.access_token;
@@ -13,7 +14,7 @@ export default async function attachUserId(request: FastifyRequest, reply: Fasti
   }
 
   if (!payload?.id) {
-    reply.code(401).send({ error: 'Unauthorized' });
+    reply.code(401).send(errorResponse(ERRORS.UNAUTHORIZED));
     return;
   }
 

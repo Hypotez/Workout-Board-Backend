@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { uuidSchema, dateSchema } from '../shared/common';
+import { uuidSchema, dateSchema } from '../common';
 import { GetRoutineExercisesSchema, CreateRoutineExercisesSchema } from './exercise';
 
 const GetRoutineSchema = z.object({

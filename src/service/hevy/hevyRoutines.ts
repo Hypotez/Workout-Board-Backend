@@ -9,7 +9,7 @@ import {
   CreateRoutine,
   CreateRoutineResponse,
   UpdateRoutine,
-} from '../../schemas/hevy/routine';
+} from '../../schemas/shared/hevy/routine';
 
 import { UuidType } from '../../schemas/shared/common';
 

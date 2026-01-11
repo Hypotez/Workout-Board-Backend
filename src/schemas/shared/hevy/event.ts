@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { GetWorkoutSchema } from './workout';
-import { dateSchema } from '../shared/common';
+import { dateSchema } from '../common';
 
 const UpdatedEventSchema = z.object({
   type: z.literal('updated'),

@@ -1,7 +1,10 @@
 import HttpClient from '../httpClient';
 
 import { IHevyExerciseHistoryService } from '../../types/service';
-import { GetExercisesHistory, GetExercisesHistorySchema } from '../../schemas/hevy/exerciseHistory';
+import {
+  GetExercisesHistory,
+  GetExercisesHistorySchema,
+} from '../../schemas/shared/hevy/exerciseHistory';
 
 export default class HevyExerciseHistoryService
   extends HttpClient

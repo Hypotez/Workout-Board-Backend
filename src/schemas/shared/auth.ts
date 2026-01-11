@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 const usernameField = z.string().min(1, 'Username must be a non-empty string');
 const passwordField = z.string().min(1, 'Password must be a non-empty string');
-const emailField = z.email('Invalid email format');
+export const emailField = z.email('Invalid email format');
 
 export const CookieResponseSchema = z.object({
   access_token: z.string(),
@@ -34,6 +34,7 @@ export const LoginUserSchema = z.discriminatedUnion('type', [
   LoginEmailSchema,
 ]);
 
+export type EmailInput = z.infer<typeof emailField>;
 export type CreateUserInput = z.infer<typeof CreateUserSchema>;
 export type CookieResponse = z.infer<typeof CookieResponseSchema>;
 export type LoginUserInput = z.infer<typeof LoginUserSchema>;

@@ -1,24 +1,27 @@
-import { GetEvents } from '../schemas/hevy/event';
+import { GetEvents } from '../schemas/shared/hevy/event';
 import {
   CreateRoutine,
   CreateRoutineResponse,
   GetRoutineResponse,
   GetRoutinesResponse,
   UpdateRoutine,
-} from '../schemas/hevy/routine';
+} from '../schemas/shared/hevy/routine';
 import {
   CreateOrUpdateWorkout,
   GetAllWorkouts,
   GetPaginatedWorkouts,
   GetWorkout,
   GetWorkoutsCounts,
-} from '../schemas/hevy/workout';
+} from '../schemas/shared/hevy/workout';
 import { UuidType } from '../schemas/shared/common';
 
 import HevyWorkoutService from '../service/hevy/hevyWorkouts';
 import HevyRoutinesService from '../service/hevy/hevyRoutines';
-import { GetExerciseTemplate, GetExerciseTemplates } from '../schemas/hevy/exerciseTemplates';
-import { GetExercisesHistory } from '../schemas/hevy/exerciseHistory';
+import {
+  GetExerciseTemplate,
+  GetExerciseTemplates,
+} from '../schemas/shared/hevy/exerciseTemplates';
+import { GetExercisesHistory } from '../schemas/shared/hevy/exerciseHistory';
 import { CookieResponse, LoginUserInput } from '../schemas/shared/auth';
 import { PublicUser } from '../schemas/shared/user';
 import { Settings } from '../schemas/shared/settings';

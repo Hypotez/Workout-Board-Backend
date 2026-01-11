@@ -3,6 +3,7 @@ import attachUserId from '../hooks/attachUserId';
 import { SettingsSchema, Settings } from '../schemas/shared/settings';
 import { z } from 'zod';
 import type { ZodTypeProvider } from 'fastify-type-provider-zod';
+import { errorResponse } from '../schemas/shared/error';
 
 export default async function settingsRoutes(fastify: FastifyInstance) {
   fastify.addHook('preHandler', attachUserId);
@@ -27,10 +28,10 @@ export default async function settingsRoutes(fastify: FastifyInstance) {
         const userId = request.userId!;
 
         await request.service.db.saveUserSettings(userId, request.body);
-        return reply.code(200).send();
+        return reply.code(200).send({});
       } catch (error) {
         request.log.error(`Error saving user settings: ${error}`);
-        return reply.code(500).send({ error: 'Failed to save settings' });
+        return reply.code(500).send(errorResponse('Failed to save settings'));
       }
     },
   });
@@ -55,7 +56,7 @@ export default async function settingsRoutes(fastify: FastifyInstance) {
         return reply.code(200).send(settings);
       } catch (error) {
         request.log.error(`Error fetching user settings: ${error}`);
-        return reply.code(500).send({ error: 'Failed to fetch settings' });
+        return reply.code(500).send(errorResponse('Failed to fetch settings'));
       }
     },
   });

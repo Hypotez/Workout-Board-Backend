@@ -10,12 +10,12 @@ import {
   GetWorkoutSchema,
   GetPaginatedWorkoutsResponseSchema,
   GetAllWorkouts,
-} from '../../schemas/hevy/workout';
+} from '../../schemas/shared/hevy/workout';
 
 import { IHevyWorkoutsService } from '../../types/service';
 
 import { UuidType } from '../../schemas/shared/common';
-import { GetEvents, EventsSchema } from '../../schemas/hevy/event';
+import { GetEvents, EventsSchema } from '../../schemas/shared/hevy/event';
 
 export default class HevyWorkoutService extends HttpClient implements IHevyWorkoutsService {
   async getWorkouts(page: number, pageSize: number): Promise<GetPaginatedWorkouts | null> {

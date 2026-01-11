@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { ExercisesSchema, CreateExercisesSchema } from './exercise';
-import { dateSchema, uuidSchema } from '../shared/common';
+import { dateSchema, uuidSchema } from '../common';
 
 export const GetWorkoutSchema = z.object({
   id: uuidSchema,

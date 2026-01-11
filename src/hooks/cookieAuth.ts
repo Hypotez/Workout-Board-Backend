@@ -7,11 +7,13 @@ import {
   getPayload,
 } from '../crypto/jwt';
 
+import { ERRORS, errorResponse } from '../schemas/shared/error';
+
 import { FastifyRequest, FastifyReply } from 'fastify';
 
 function invalidAuth(reply: FastifyReply) {
   clearCookies(reply);
-  return reply.code(401).send({ error: 'Unauthorized' });
+  return reply.code(401).send(errorResponse(ERRORS.UNAUTHORIZED));
 }
 
 export default async function cookieAuth(request: FastifyRequest, reply: FastifyReply) {

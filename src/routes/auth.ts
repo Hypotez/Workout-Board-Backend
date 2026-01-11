@@ -5,6 +5,7 @@ import {
   LoginUserInput,
   CreateUserInput,
 } from '../schemas/shared/auth';
+import { ERRORS, errorResponse } from '../schemas/shared/error';
 import cookieAuth from '../hooks/cookieAuth';
 import { z } from 'zod';
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
@@ -30,10 +31,10 @@ export default async function authRoutes(fastify: FastifyInstance) {
         const cookie = await request.service.db.createUser(request.body);
 
         await setCookies(reply, cookie);
-        return reply.code(200).send();
+        return reply.code(200).send({});
       } catch (error) {
         request.log.error(`Error during user registration: ${error}`);
-        return reply.code(500).send({ error: 'User registration failed' });
+        return reply.code(500).send(errorResponse('User registration failed'));
       }
     },
   });
@@ -58,14 +59,14 @@ export default async function authRoutes(fastify: FastifyInstance) {
         const cookie = await request.service.db.login(request.body);
 
         if (!cookie) {
-          return reply.code(401).send({ error: 'Unauthorized' });
+          return reply.code(401).send(errorResponse(ERRORS.UNAUTHORIZED));
         }
 
         await setCookies(reply, cookie);
-        return reply.code(200).send();
+        return reply.code(200).send({});
       } catch (error) {
         request.log.error(`Error during user login: ${error}`);
-        return reply.code(500).send({ error: 'Login failed' });
+        return reply.code(500).send(errorResponse('Login failed'));
       }
     },
   });
@@ -83,7 +84,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
     },
     handler: async (_: FastifyRequest, reply: FastifyReply) => {
       clearCookies(reply);
-      return reply.code(200).send();
+      return reply.code(200).send({});
     },
   });
 
@@ -101,7 +102,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
     },
     preHandler: cookieAuth,
     handler: async (_: FastifyRequest, reply: FastifyReply): Promise<void> => {
-      return reply.code(200).send();
+      return reply.code(200).send({});
     },
   });
 }

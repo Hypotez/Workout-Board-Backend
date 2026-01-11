@@ -6,7 +6,7 @@ import {
   GetExerciseTemplates,
   GetExerciseTemplateSchema,
   GetExerciseTemplatesSchema,
-} from '../../schemas/hevy/exerciseTemplates';
+} from '../../schemas/shared/hevy/exerciseTemplates';
 
 export default class HevyExerciseTemplatesService
   extends HttpClient

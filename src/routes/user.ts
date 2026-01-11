@@ -4,6 +4,7 @@ import attachUserId from '../hooks/attachUserId';
 import cookieAuth from '../hooks/cookieAuth';
 import { z } from 'zod';
 import type { ZodTypeProvider } from 'fastify-type-provider-zod';
+import { errorResponse } from '../schemas/shared/error';
 
 export default async function userRoutes(fastify: FastifyInstance) {
   fastify.withTypeProvider<ZodTypeProvider>().route({
@@ -26,13 +27,13 @@ export default async function userRoutes(fastify: FastifyInstance) {
         const user = await request.service.db.getUserById(userId);
 
         if (!user) {
-          return reply.code(404).send({ error: 'User not found' });
+          return reply.code(404).send(errorResponse('User not found'));
         }
 
         return reply.code(200).send(user);
       } catch (error) {
         request.log.error(`Error fetching user data: ${error}`);
-        return reply.code(500).send({ error: 'Failed to fetch user data' });
+        return reply.code(500).send(errorResponse('Failed to fetch user data'));
       }
     },
   });
