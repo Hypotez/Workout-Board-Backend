@@ -1,9 +1,9 @@
 import { z } from 'zod';
-import { uuidSchema, dateSchema } from '../common';
+import { dateSchema } from '../common';
 import { GetRoutineExercisesSchema, CreateRoutineExercisesSchema } from './exercise';
 
 const GetRoutineSchema = z.object({
-  id: uuidSchema,
+  id: z.string(),
   title: z.string(),
   folder_id: z.number().nullable(),
   updated_at: dateSchema,

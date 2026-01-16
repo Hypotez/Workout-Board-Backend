@@ -1,11 +1,11 @@
 import { ApiResponse, SuccessResponse, SuccessString } from '../schemas/shared/api';
-import { UrlType, UuidType } from '../schemas/shared/common';
+import { UrlType } from '../schemas/shared/common';
 
 export default class HttpClient {
   private baseUrl: UrlType;
-  private apiKey: UuidType | undefined;
+  private apiKey: string | undefined;
 
-  constructor(url: UrlType, apiKey?: UuidType) {
+  constructor(url: UrlType, apiKey?: string) {
     this.baseUrl = url;
     this.apiKey = apiKey;
   }

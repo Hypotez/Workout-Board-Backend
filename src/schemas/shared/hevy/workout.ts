@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import { ExercisesSchema, CreateExercisesSchema } from './exercise';
-import { dateSchema, uuidSchema } from '../common';
+import { dateSchema } from '../common';
 
 export const GetWorkoutSchema = z.object({
-  id: uuidSchema,
+  id: z.string(),
   title: z.string(),
   description: z.string(),
   start_time: dateSchema,

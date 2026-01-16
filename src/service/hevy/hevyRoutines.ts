@@ -11,8 +11,6 @@ import {
   UpdateRoutine,
 } from '../../schemas/shared/hevy/routine';
 
-import { UuidType } from '../../schemas/shared/common';
-
 import { IHevyRoutinesService } from '../../types/service';
 
 export default class HevyRoutinesService extends HttpClient implements IHevyRoutinesService {
@@ -32,7 +30,7 @@ export default class HevyRoutinesService extends HttpClient implements IHevyRout
     return null;
   }
 
-  async getRoutineById(routineId: UuidType): Promise<GetRoutineResponse | null> {
+  async getRoutineById(routineId: string): Promise<GetRoutineResponse | null> {
     const response = await this.fetchWithAuth(`/v1/routines/${routineId}`, { method: 'GET' });
 
     if (response) {
@@ -64,7 +62,7 @@ export default class HevyRoutinesService extends HttpClient implements IHevyRout
   }
 
   async updateRoutine(
-    routineId: UuidType,
+    routineId: string,
     routinePayload: UpdateRoutine
   ): Promise<CreateRoutineResponse | null> {
     const response = await this.fetchWithAuth(`/v1/routines/${routineId}`, {

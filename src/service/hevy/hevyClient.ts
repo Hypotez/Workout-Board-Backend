@@ -11,12 +11,12 @@ export default class HevyClient {
   public exerciseTemplates: HevyExerciseTemplatesService;
   public exerciseHistory: HevyExerciseHistoryService;
 
-  constructor() {
-    const baseUrl: UrlType = 'https://api.hevyapp.com/v1/' as UrlType;
+  constructor(apiKey?: string) {
+    const baseUrl: UrlType = 'https://api.hevyapp.com' as UrlType;
 
-    this.workouts = new HevyWorkoutService(baseUrl);
-    this.routines = new HevyRoutinesService(baseUrl);
-    this.exerciseTemplates = new HevyExerciseTemplatesService(baseUrl);
-    this.exerciseHistory = new HevyExerciseHistoryService(baseUrl);
+    this.workouts = new HevyWorkoutService(baseUrl, apiKey);
+    this.routines = new HevyRoutinesService(baseUrl, apiKey);
+    this.exerciseTemplates = new HevyExerciseTemplatesService(baseUrl, apiKey);
+    this.exerciseHistory = new HevyExerciseHistoryService(baseUrl, apiKey);
   }
 }

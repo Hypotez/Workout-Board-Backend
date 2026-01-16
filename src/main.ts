@@ -14,6 +14,7 @@ import env from './config/env';
 import user from './routes/user';
 import auth from './routes/auth';
 import settings from './routes/settings';
+import routines from './routes/routines';
 import HevyClient from './service/hevy/hevyClient';
 import DatabaseService from './service/db';
 
@@ -64,6 +65,10 @@ async function startServer() {
           name: 'Settings',
           description: 'Endpoints related to user settings',
         },
+        {
+          name: 'Routines',
+          description: 'Endpoints related to routines',
+        },
       ],
       components: {
         securitySchemes: {
@@ -104,6 +109,7 @@ async function startServer() {
   await fastify.register(auth, { prefix: '/api/v1/auth' });
   await fastify.register(user, { prefix: '/api/v1/user' });
   await fastify.register(settings, { prefix: '/api/v1/settings' });
+  await fastify.register(routines, { prefix: '/api/v1/routines' });
 
   try {
     await fastify.listen({ port: PORT });

@@ -14,7 +14,6 @@ import {
 
 import { IHevyWorkoutsService } from '../../types/service';
 
-import { UuidType } from '../../schemas/shared/common';
 import { GetEvents, EventsSchema } from '../../schemas/shared/hevy/event';
 
 export default class HevyWorkoutService extends HttpClient implements IHevyWorkoutsService {
@@ -65,7 +64,7 @@ export default class HevyWorkoutService extends HttpClient implements IHevyWorko
     return null;
   }
 
-  async getSingleWorkoutById(workoutId: UuidType): Promise<GetWorkout | null> {
+  async getSingleWorkoutById(workoutId: string): Promise<GetWorkout | null> {
     const response = await this.fetchWithAuth(`/v1/workouts/${workoutId}`, { method: 'GET' });
 
     if (response) {
@@ -97,7 +96,7 @@ export default class HevyWorkoutService extends HttpClient implements IHevyWorko
   }
 
   async updateWorkout(
-    workoutId: UuidType,
+    workoutId: string,
     workoutPayload: CreateOrUpdateWorkout
   ): Promise<GetWorkout | null> {
     const response = await this.fetchWithAuth(`/v1/workouts/${workoutId}`, {
