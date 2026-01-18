@@ -10,6 +10,10 @@ export default class HttpClient {
     this.apiKey = apiKey;
   }
 
+  public setApiKey(apiKey?: string) {
+    this.apiKey = apiKey;
+  }
+
   protected async fetchWithAuth(endpoint: string, options?: RequestInit): Promise<ApiResponse> {
     const fullPath = this.baseUrl + endpoint;
     const headers = {

@@ -13,10 +13,8 @@ import {
   GetWorkout,
   GetWorkoutsCounts,
 } from '../schemas/shared/hevy/workout';
-import { UuidType } from '../schemas/shared/common';
 
-import HevyWorkoutService from '../service/hevy/hevyWorkouts';
-import HevyRoutinesService from '../service/hevy/hevyRoutines';
+import HevyClient from '../service/hevy/hevyClient';
 import {
   GetExerciseTemplate,
   GetExerciseTemplates,
@@ -58,7 +56,7 @@ export interface IHevyWorkoutsService {
    * @param workoutId The ID of the workout to retrieve.
    * @returns Hevy response
    */
-  getSingleWorkoutById(workoutId: UuidType): Promise<GetWorkout | null>;
+  getSingleWorkoutById(workoutId: string): Promise<GetWorkout | null>;
   /**
    * Create a new workout.
    * @param workoutId The ID of the workout to create.
@@ -71,7 +69,7 @@ export interface IHevyWorkoutsService {
    * @returns Hevy response
    */
   updateWorkout(
-    workoutId: UuidType,
+    workoutId: string,
     workoutPayload: CreateOrUpdateWorkout
   ): Promise<GetWorkout | null>;
 }
@@ -89,7 +87,7 @@ export interface IHevyRoutinesService {
    * @param routineId The ID of the routine to retrieve.
    * @returns Hevy response
    */
-  getRoutineById(routineId: UuidType): Promise<GetRoutineResponse | null>;
+  getRoutineById(routineId: string): Promise<GetRoutineResponse | null>;
   /**
    * Create a new routine.
    * @param routinePayload The payload of the routine to create.
@@ -103,7 +101,7 @@ export interface IHevyRoutinesService {
    * @returns Hevy response
    */
   updateRoutine(
-    routineId: UuidType,
+    routineId: string,
     routinePayload: UpdateRoutine
   ): Promise<CreateRoutineResponse | null>;
 }
@@ -179,14 +177,7 @@ export interface IDatabaseService {
   getUserSettings(userId: string): Promise<Settings>;
 }
 
-export interface HevyClientService {
-  workouts: HevyWorkoutService;
-  routines: HevyRoutinesService;
-  exerciseTemplates: IHevyExerciseTemplatesService;
-  exerciseHistory: IHevyExerciseHistoryService;
-}
-
 export interface Service {
-  hevyClient: HevyClientService;
+  hevyClient: HevyClient;
   db: IDatabaseService;
 }

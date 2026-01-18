@@ -19,4 +19,11 @@ export default class HevyClient {
     this.exerciseTemplates = new HevyExerciseTemplatesService(baseUrl, apiKey);
     this.exerciseHistory = new HevyExerciseHistoryService(baseUrl, apiKey);
   }
+
+  public setApiKey(apiKey?: string) {
+    this.workouts.setApiKey(apiKey);
+    this.routines.setApiKey(apiKey);
+    this.exerciseTemplates.setApiKey(apiKey);
+    this.exerciseHistory.setApiKey(apiKey);
+  }
 }

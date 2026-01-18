@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import { uuidSchema, nonEmptyStringSchema } from './common';
+import { nonEmptyStringSchema } from './common';
 
 export const PublicUserSchema = z.object({
-  id: uuidSchema,
+  id: z.string(),
   username: nonEmptyStringSchema,
   email: nonEmptyStringSchema,
   created_at: z.date(),
