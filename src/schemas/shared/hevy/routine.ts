@@ -47,3 +47,5 @@ export type CreateRoutineResponse = z.infer<typeof CreateRoutineResponseSchema>;
 
 export type CreateRoutine = z.infer<typeof CreateRoutineSchema>;
 export type UpdateRoutine = z.infer<typeof UpdateRoutineSchema>;
+
+export type Routine = z.infer<typeof GetRoutineSchema>;
